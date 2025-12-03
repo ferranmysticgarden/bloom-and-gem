@@ -1,8 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import { Toaster } from "./components/ui/toaster";
-import "./App.css";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from '@/components/ui/toaster';
+import Index from '@/pages/Index';
+import Auth from '@/pages/Auth';
 
 function App() {
   return (
