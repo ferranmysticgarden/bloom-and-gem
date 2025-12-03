@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Sparkles } from 'lucide-react';
@@ -52,7 +51,29 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div 
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem',
+        position: 'relative',
+        overflow: 'hidden',
+        background: 'linear-gradient(180deg, hsl(270 50% 8%) 0%, hsl(250 50% 5%) 100%)'
+      }}
+    >
+      {/* Background glow effects */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `
+            radial-gradient(ellipse at top, hsl(280 60% 15%) 0%, transparent 50%),
+            radial-gradient(ellipse at bottom, hsl(200 60% 10%) 0%, transparent 50%)
+          `
+        }}
+      />
+
       {/* Animated background particles */}
       {Array.from({ length: 30 }).map((_, i) => (
         <div
@@ -70,21 +91,45 @@ const Auth = () => {
         />
       ))}
 
-      <div className="fairy-card p-8 w-full max-w-md relative z-10">
+      {/* Main card */}
+      <div 
+        className="w-full max-w-md relative z-10 p-8 rounded-2xl"
+        style={{
+          background: 'linear-gradient(135deg, hsl(270 40% 12%) 0%, hsl(270 40% 15%) 50%, hsl(270 40% 12%) 100%)',
+          boxShadow: '0 0 20px hsl(280 70% 60% / 0.2), 0 0 60px hsl(280 70% 60% / 0.1), inset 0 1px 0 hsl(60 30% 96% / 0.1)',
+          border: '1px solid hsl(280 70% 60% / 0.3)',
+        }}
+      >
+        {/* Card glow overlay */}
+        <div 
+          className="absolute inset-0 rounded-2xl opacity-30 pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle at 30% 20%, hsl(280 100% 70% / 0.3), transparent 40%)'
+          }}
+        />
+
         {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative z-10">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Sparkles className="w-8 h-8 text-primary" />
-            <h1 className="font-cinzel text-4xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
+            <Sparkles className="w-8 h-8" style={{ color: 'hsl(280 70% 60%)' }} />
+            <h1 
+              className="font-cinzel text-4xl font-bold"
+              style={{
+                background: 'linear-gradient(to right, #f472b6, #a78bfa, #60a5fa)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
               Bloom & Gem
             </h1>
-            <Sparkles className="w-8 h-8 text-accent" />
+            <Sparkles className="w-8 h-8" style={{ color: 'hsl(320 70% 55%)' }} />
           </div>
-          <p className="text-muted-foreground">Aventura Mística de Gemas</p>
+          <p style={{ color: 'hsl(60 20% 70%)' }}>Aventura Mística de Gemas</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
           <div>
             <Input
               type="email"
@@ -92,7 +137,7 @@ const Auth = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-muted/50 border-border/50 focus:border-primary"
+              className="bg-white/10 border-purple-500/30 text-white placeholder:text-gray-400 focus:border-purple-400"
             />
           </div>
           
@@ -104,12 +149,12 @@ const Auth = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="bg-muted/50 border-border/50 focus:border-primary pr-10"
+              className="bg-white/10 border-purple-500/30 text-white placeholder:text-gray-400 focus:border-purple-400 pr-10"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -118,11 +163,16 @@ const Auth = () => {
           <button
             type="submit"
             disabled={loading}
-            className="magic-button w-full text-lg py-4"
+            className="w-full text-lg py-4 rounded-full font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
+            style={{
+              fontFamily: "'Cinzel', serif",
+              background: 'linear-gradient(135deg, hsl(280 70% 60%) 0%, hsl(320 70% 55%) 100%)',
+              boxShadow: '0 4px 20px hsl(280 70% 60% / 0.4), 0 0 40px hsl(280 70% 60% / 0.2), inset 0 1px 0 hsl(60 30% 96% / 0.2)',
+            }}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
-                <div className="w-5 h-5 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 Cargando...
               </span>
             ) : (
@@ -132,11 +182,14 @@ const Auth = () => {
         </form>
 
         {/* Toggle */}
-        <p className="mt-6 text-center text-muted-foreground">
+        <p className="mt-6 text-center relative z-10" style={{ color: 'hsl(60 20% 70%)' }}>
           {isLogin ? '¿Primera vez aquí?' : '¿Ya tienes cuenta?'}{' '}
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-primary hover:text-accent transition-colors font-semibold"
+            className="font-semibold transition-colors"
+            style={{ color: 'hsl(280 70% 60%)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'hsl(320 70% 55%)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'hsl(280 70% 60%)'}
           >
             {isLogin ? 'Crear cuenta' : 'Iniciar sesión'}
           </button>
