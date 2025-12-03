@@ -40,7 +40,7 @@ export const MainMenu = memo(({
       }}
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/20" />
+      <div className="absolute inset-0 bg-black/30" />
 
       {/* Floating particles */}
       {Array.from({ length: 30 }).map((_, i) => (
@@ -60,19 +60,45 @@ export const MainMenu = memo(({
         />
       ))}
       
-      {/* Stats Bar - Top */}
-      <div className="relative z-10 flex gap-4 mt-4 mb-8">
-        <div className="flex items-center gap-2 bg-red-900/80 px-4 py-2 rounded-full border border-red-500/50">
-          <Heart className="w-5 h-5 text-red-500 fill-red-500" />
-          <span className="font-bold text-white">{lives}</span>
+      {/* Stats Bar - Top - SIEMPRE VISIBLE */}
+      <div className="relative z-50 flex gap-3 mt-6 mb-6">
+        {/* Vidas */}
+        <div 
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full shadow-lg"
+          style={{
+            background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)',
+            border: '2px solid #ef4444',
+            boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)',
+          }}
+        >
+          <Heart className="w-5 h-5 text-red-400 fill-red-400" />
+          <span className="font-bold text-white text-lg">{lives}</span>
         </div>
-        <div className="flex items-center gap-2 bg-purple-900/80 px-4 py-2 rounded-full border border-purple-400/50">
-          <span className="text-lg">💎</span>
-          <span className="font-bold text-white">{gems}</span>
+        
+        {/* Gemas */}
+        <div 
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full shadow-lg"
+          style={{
+            background: 'linear-gradient(135deg, #581c87 0%, #7c3aed 100%)',
+            border: '2px solid #a855f7',
+            boxShadow: '0 4px 15px rgba(168, 85, 247, 0.4)',
+          }}
+        >
+          <span className="text-xl">💎</span>
+          <span className="font-bold text-white text-lg">{gems}</span>
         </div>
-        <div className="flex items-center gap-2 bg-green-900/80 px-4 py-2 rounded-full border border-green-500/50">
-          <span className="text-lg">🌿</span>
-          <span className="font-bold text-white">{totalScore}</span>
+        
+        {/* Puntos/Links */}
+        <div 
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full shadow-lg"
+          style={{
+            background: 'linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%)',
+            border: '2px solid #3b82f6',
+            boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)',
+          }}
+        >
+          <span className="text-xl">🔗</span>
+          <span className="font-bold text-white text-lg">{totalScore}</span>
         </div>
       </div>
       
