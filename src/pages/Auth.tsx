@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Sparkles } from 'lucide-react';
 
@@ -15,13 +14,21 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session) {
+          navigate('/');
+        }
+      }
+    );
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate('/');
       }
-    };
-    checkSession();
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,9 +41,15 @@ const Auth = () => {
         if (error) throw error;
         toast({ title: '¡Bienvenido de nuevo! ✨' });
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { error } = await supabase.auth.signUp({ 
+          email, 
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`
+          }
+        });
         if (error) throw error;
-        toast({ title: '¡Cuenta creada! 🎉' });
+        toast({ title: '¡Cuenta creada! 🎉', description: 'Ya puedes iniciar sesión' });
       }
       navigate('/');
     } catch (error: any) {
@@ -51,128 +64,180 @@ const Auth = () => {
   };
 
   return (
-    <div 
+    <div
       style={{
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '1rem',
+        padding: '16px',
+        background: 'linear-gradient(180deg, #1a0a2e 0%, #0f172a 50%, #0a0f1a 100%)',
         position: 'relative',
         overflow: 'hidden',
-        background: 'linear-gradient(180deg, hsl(270 50% 8%) 0%, hsl(250 50% 5%) 100%)'
       }}
     >
-      {/* Background glow effects */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
+      {/* Background glows */}
+      <div
         style={{
-          background: `
-            radial-gradient(ellipse at top, hsl(280 60% 15%) 0%, transparent 50%),
-            radial-gradient(ellipse at bottom, hsl(200 60% 10%) 0%, transparent 50%)
-          `
+          position: 'absolute',
+          top: '-100px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '600px',
+          height: '400px',
+          background: 'radial-gradient(ellipse, rgba(147, 51, 234, 0.3) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '-50px',
+          left: '20%',
+          width: '400px',
+          height: '300px',
+          background: 'radial-gradient(ellipse, rgba(236, 72, 153, 0.2) 0%, transparent 70%)',
+          pointerEvents: 'none',
         }}
       />
 
-      {/* Animated background particles */}
-      {Array.from({ length: 30 }).map((_, i) => (
-        <div
-          key={i}
-          className="floating-particle"
-          style={{
-            width: 4 + Math.random() * 8,
-            height: 4 + Math.random() * 8,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            background: `hsl(${280 + Math.random() * 60} 70% 60% / 0.3)`,
-            animationDelay: `${Math.random() * 8}s`,
-            animationDuration: `${6 + Math.random() * 6}s`,
-          }}
-        />
-      ))}
-
-      {/* Main card */}
-      <div 
-        className="w-full max-w-md relative z-10 p-8 rounded-2xl"
+      {/* Card */}
+      <div
         style={{
-          background: 'linear-gradient(135deg, hsl(270 40% 12%) 0%, hsl(270 40% 15%) 50%, hsl(270 40% 12%) 100%)',
-          boxShadow: '0 0 20px hsl(280 70% 60% / 0.2), 0 0 60px hsl(280 70% 60% / 0.1), inset 0 1px 0 hsl(60 30% 96% / 0.1)',
-          border: '1px solid hsl(280 70% 60% / 0.3)',
+          width: '100%',
+          maxWidth: '420px',
+          background: 'linear-gradient(135deg, rgba(88, 28, 135, 0.6) 0%, rgba(49, 46, 129, 0.4) 50%, rgba(15, 23, 42, 0.8) 100%)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '24px',
+          padding: '40px 32px',
+          border: '1px solid rgba(168, 85, 247, 0.3)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 60px rgba(147, 51, 234, 0.2)',
+          position: 'relative',
+          zIndex: 10,
         }}
       >
-        {/* Card glow overlay */}
-        <div 
-          className="absolute inset-0 rounded-2xl opacity-30 pointer-events-none"
-          style={{
-            background: 'radial-gradient(circle at 30% 20%, hsl(280 100% 70% / 0.3), transparent 40%)'
-          }}
-        />
-
         {/* Logo */}
-        <div className="text-center mb-8 relative z-10">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Sparkles className="w-8 h-8" style={{ color: 'hsl(280 70% 60%)' }} />
-            <h1 
-              className="font-cinzel text-4xl font-bold"
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '8px' }}>
+            <Sparkles style={{ width: '28px', height: '28px', color: '#a855f7' }} />
+            <h1
               style={{
-                background: 'linear-gradient(to right, #f472b6, #a78bfa, #60a5fa)',
+                fontFamily: "'Cinzel', serif",
+                fontSize: '32px',
+                fontWeight: 'bold',
+                background: 'linear-gradient(90deg, #f472b6, #a78bfa, #60a5fa)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
+                margin: 0,
               }}
             >
               Bloom & Gem
             </h1>
-            <Sparkles className="w-8 h-8" style={{ color: 'hsl(320 70% 55%)' }} />
+            <Sparkles style={{ width: '28px', height: '28px', color: '#ec4899' }} />
           </div>
-          <p style={{ color: 'hsl(60 20% 70%)' }}>Aventura Mística de Gemas</p>
+          <p style={{ color: 'rgba(216, 180, 254, 0.8)', fontSize: '14px', margin: 0 }}>
+            Aventura Mística de Gemas
+          </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
-          <div>
-            <Input
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '16px' }}>
+            <input
               type="email"
               placeholder="Correo electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-white/10 border-purple-500/30 text-white placeholder:text-gray-400 focus:border-purple-400"
+              style={{
+                width: '100%',
+                height: '52px',
+                padding: '0 16px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(168, 85, 247, 0.3)',
+                borderRadius: '12px',
+                color: 'white',
+                fontSize: '16px',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
             />
           </div>
-          
-          <div className="relative">
-            <Input
+
+          <div style={{ marginBottom: '20px', position: 'relative' }}>
+            <input
               type={showPassword ? 'text' : 'password'}
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="bg-white/10 border-purple-500/30 text-white placeholder:text-gray-400 focus:border-purple-400 pr-10"
+              style={{
+                width: '100%',
+                height: '52px',
+                padding: '0 48px 0 16px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(168, 85, 247, 0.3)',
+                borderRadius: '12px',
+                color: 'white',
+                fontSize: '16px',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              style={{
+                position: 'absolute',
+                right: '16px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: 'rgba(216, 180, 254, 0.6)',
+                cursor: 'pointer',
+                padding: 0,
+                display: 'flex',
+              }}
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showPassword ? <EyeOff style={{ width: '20px', height: '20px' }} /> : <Eye style={{ width: '20px', height: '20px' }} />}
             </button>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full text-lg py-4 rounded-full font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
             style={{
+              width: '100%',
+              height: '56px',
+              background: 'linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #9333ea 100%)',
+              backgroundSize: '200% 100%',
+              border: 'none',
+              borderRadius: '14px',
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: '600',
               fontFamily: "'Cinzel', serif",
-              background: 'linear-gradient(135deg, hsl(280 70% 60%) 0%, hsl(320 70% 55%) 100%)',
-              boxShadow: '0 4px 20px hsl(280 70% 60% / 0.4), 0 0 40px hsl(280 70% 60% / 0.2), inset 0 1px 0 hsl(60 30% 96% / 0.2)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.7 : 1,
+              boxShadow: '0 10px 30px -5px rgba(147, 51, 234, 0.5)',
+              transition: 'all 0.3s ease',
             }}
           >
             {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <div
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    border: '2px solid rgba(255,255,255,0.3)',
+                    borderTopColor: 'white',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                  }}
+                />
                 Cargando...
               </span>
             ) : (
@@ -182,25 +247,47 @@ const Auth = () => {
         </form>
 
         {/* Toggle */}
-        <p className="mt-6 text-center relative z-10" style={{ color: 'hsl(60 20% 70%)' }}>
+        <p style={{ marginTop: '24px', textAlign: 'center', color: 'rgba(216, 180, 254, 0.7)', fontSize: '14px' }}>
           {isLogin ? '¿Primera vez aquí?' : '¿Ya tienes cuenta?'}{' '}
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="font-semibold transition-colors"
-            style={{ color: 'hsl(280 70% 60%)' }}
-            onMouseEnter={(e) => e.currentTarget.style.color = 'hsl(320 70% 55%)'}
-            onMouseLeave={(e) => e.currentTarget.style.color = 'hsl(280 70% 60%)'}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#f472b6',
+              fontWeight: '600',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              fontSize: '14px',
+            }}
           >
             {isLogin ? 'Crear cuenta' : 'Iniciar sesión'}
           </button>
         </p>
 
-        {/* Decorative elements */}
-        <div className="absolute -top-3 -left-3 text-2xl">🌸</div>
-        <div className="absolute -top-3 -right-3 text-2xl">💎</div>
-        <div className="absolute -bottom-3 -left-3 text-2xl">🦋</div>
-        <div className="absolute -bottom-3 -right-3 text-2xl">✨</div>
+        {/* Corner decorations */}
+        <span style={{ position: 'absolute', top: '-8px', left: '-8px', fontSize: '20px' }}>🌸</span>
+        <span style={{ position: 'absolute', top: '-8px', right: '-8px', fontSize: '20px' }}>💎</span>
+        <span style={{ position: 'absolute', bottom: '-8px', left: '-8px', fontSize: '20px' }}>🦋</span>
+        <span style={{ position: 'absolute', bottom: '-8px', right: '-8px', fontSize: '20px' }}>✨</span>
       </div>
+
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        input::placeholder {
+          color: rgba(216, 180, 254, 0.5);
+        }
+        input:focus {
+          border-color: rgba(168, 85, 247, 0.6) !important;
+          box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+        }
+        button[type="submit"]:hover:not(:disabled) {
+          transform: translateY(-2px);
+          background-position: 100% 0;
+        }
+      `}</style>
     </div>
   );
 };
