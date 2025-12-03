@@ -8,12 +8,13 @@ import { LevelComplete } from '@/components/game/LevelComplete';
 import { GameOver } from '@/components/game/GameOver';
 import { MainMenu } from '@/components/game/MainMenu';
 import { LevelSelect } from '@/components/game/LevelSelect';
+import { Shop } from '@/components/game/Shop';
 import { DailyReward } from '@/components/game/DailyReward';
 import { DAILY_REWARDS } from '@/config/levels';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Pause } from 'lucide-react';
+import mysticForestBg from '@/assets/mystic-forest-bg.jpg';
 
-type GameScreen = 'menu' | 'level-select' | 'playing' | 'paused';
+type GameScreen = 'menu' | 'level-select' | 'playing' | 'paused' | 'shop';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -103,6 +104,11 @@ const Game = () => {
     navigate('/auth');
   }, [navigate]);
 
+  const handlePurchase = useCallback((itemId: string) => {
+    // Handle purchase logic here
+    console.log('Purchasing:', itemId);
+  }, []);
+
   // Determine if level is won or lost
   const isLevelWon = !gameState.isPlaying && gameState.score >= gameState.targetScore && gameState.board.length > 0;
   const isLevelLost = !gameState.isPlaying && gameState.score < gameState.targetScore && gameState.moves <= 0 && gameState.board.length > 0;
@@ -118,11 +124,12 @@ const Game = () => {
           unlockedLevels={gameState.unlockedLevels}
           totalScore={gameState.totalScore}
           streak={gameState.streak}
+          userEmail={userEmail}
           onPlay={handlePlay}
           onLevelSelect={() => setScreen('level-select')}
-          onDailyReward={() => setShowDailyReward(true)}
-          onSettings={() => {}}
+          onShop={() => setScreen('shop')}
           onLogout={handleLogout}
+          onExit={handleLogout}
         />
         {showDailyReward && (
           <DailyReward
@@ -135,6 +142,19 @@ const Game = () => {
     );
   }
 
+  // Shop screen
+  if (screen === 'shop') {
+    return (
+      <Shop
+        lives={gameState.lives}
+        gems={gameState.gems}
+        totalScore={gameState.totalScore}
+        onClose={handleMainMenu}
+        onPurchase={handlePurchase}
+      />
+    );
+  }
+
   // Level select screen
   if (screen === 'level-select') {
     return (
@@ -142,53 +162,65 @@ const Game = () => {
         unlockedLevels={gameState.unlockedLevels}
         onSelectLevel={handleSelectLevel}
         onBack={handleMainMenu}
+        onExit={handleLogout}
       />
     );
   }
 
   // Playing screen
   return (
-    <div className="min-h-screen flex flex-col p-4">
-      {/* Top bar */}
-      <div className="flex justify-between items-center mb-4">
-        <button
-          onClick={handleMainMenu}
-          className="p-2 rounded-full bg-muted/50 hover:bg-muted transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <span className="text-sm text-muted-foreground">{userEmail}</span>
-        <button
-          onClick={() => setScreen('paused')}
-          className="p-2 rounded-full bg-muted/50 hover:bg-muted transition-colors"
-        >
-          <Pause className="w-5 h-5" />
-        </button>
+    <div 
+      className="min-h-screen flex flex-col p-4 relative"
+      style={{
+        backgroundImage: `url(${mysticForestBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/20" />
+
+      {/* Floating particles */}
+      {Array.from({ length: 20 }).map((_, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full pointer-events-none z-0"
+          style={{
+            width: 3 + Math.random() * 5,
+            height: 3 + Math.random() * 5,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            background: `radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,215,0,0.6))`,
+            boxShadow: '0 0 10px rgba(255,215,0,0.5)',
+            animation: `float-particle ${6 + Math.random() * 6}s ease-in-out infinite`,
+            animationDelay: `${Math.random() * 8}s`,
+          }}
+        />
+      ))}
+
+      <div className="relative z-10 flex flex-col flex-1">
+        <GameHeader
+          level={gameState.level}
+          score={gameState.score}
+          targetScore={gameState.targetScore}
+          moves={gameState.moves}
+          combo={gameState.combo}
+          onExit={handleMainMenu}
+        />
+
+        <GameBoard
+          board={gameState.board}
+          selectedGem={gameState.selectedGem}
+          onGemClick={handleBoardClick}
+          onGemSwap={swapGems}
+        />
+
+        <BoosterBar
+          boosters={gameState.boosters}
+          activeBooster={activeBooster}
+          onBoosterSelect={handleBoosterSelect}
+        />
       </div>
-
-      <GameHeader
-        level={gameState.level}
-        score={gameState.score}
-        targetScore={gameState.targetScore}
-        moves={gameState.moves}
-        combo={gameState.combo}
-        lives={gameState.lives}
-        maxLives={gameState.maxLives}
-        gems={gameState.gems}
-      />
-
-      <GameBoard
-        board={gameState.board}
-        selectedGem={gameState.selectedGem}
-        onGemClick={handleBoardClick}
-        onGemSwap={swapGems}
-      />
-
-      <BoosterBar
-        boosters={gameState.boosters}
-        activeBooster={activeBooster}
-        onBoosterSelect={handleBoosterSelect}
-      />
 
       {/* Level complete modal */}
       {isLevelWon && (
@@ -217,18 +249,28 @@ const Game = () => {
       {/* Pause modal */}
       {screen === 'paused' && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="fairy-card p-8 text-center">
-            <h2 className="font-cinzel text-2xl mb-6">Pausado</h2>
+          <div 
+            className="p-8 text-center rounded-2xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(60, 20, 80, 0.95) 0%, rgba(40, 15, 60, 0.95) 100%)',
+              border: '2px solid rgba(255, 215, 0, 0.3)',
+            }}
+          >
+            <h2 className="font-cinzel text-2xl mb-6 text-white">Pausado</h2>
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => setScreen('playing')}
-                className="magic-button"
+                className="px-6 py-3 rounded-full font-semibold"
+                style={{
+                  background: 'linear-gradient(135deg, #FFA500 0%, #FF8C00 100%)',
+                  color: '#1a1a2e',
+                }}
               >
                 Continuar
               </button>
               <button
                 onClick={handleMainMenu}
-                className="px-6 py-3 rounded-full border border-border/50 hover:bg-muted/50"
+                className="px-6 py-3 rounded-full border border-white/30 hover:bg-white/10 text-white"
               >
                 Menú Principal
               </button>
@@ -236,6 +278,19 @@ const Game = () => {
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes float-particle {
+          0%, 100% {
+            transform: translateY(0) translateX(0);
+            opacity: 0.3;
+          }
+          50% {
+            transform: translateY(-30px) translateX(10px);
+            opacity: 1;
+          }
+        }
+      `}</style>
     </div>
   );
 };

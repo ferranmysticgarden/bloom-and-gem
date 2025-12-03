@@ -1,6 +1,6 @@
-import { memo } from 'react';
-import { Star, Trophy, Gem } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { memo, useEffect, useState } from 'react';
+import { Star } from 'lucide-react';
+import crystalCaveImg from '@/assets/crystal-cave.jpg';
 
 interface LevelCompleteProps {
   level: number;
@@ -11,6 +11,33 @@ interface LevelCompleteProps {
   onMainMenu: () => void;
 }
 
+// Confetti particle component
+const Confetti = ({ count = 100 }: { count?: number }) => {
+  const colors = ['#FFD700', '#FF69B4', '#00CED1', '#9370DB', '#FF6347', '#32CD32'];
+  
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <div
+          key={i}
+          className="absolute pointer-events-none"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `-10px`,
+            width: `${4 + Math.random() * 8}px`,
+            height: `${8 + Math.random() * 12}px`,
+            background: colors[Math.floor(Math.random() * colors.length)],
+            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+            animation: `confetti-fall ${3 + Math.random() * 4}s linear infinite`,
+            animationDelay: `${Math.random() * 3}s`,
+            transform: `rotate(${Math.random() * 360}deg)`,
+          }}
+        />
+      ))}
+    </>
+  );
+};
+
 export const LevelComplete = memo(({
   level,
   score,
@@ -19,74 +46,198 @@ export const LevelComplete = memo(({
   onNextLevel,
   onMainMenu,
 }: LevelCompleteProps) => {
+  const [showContent, setShowContent] = useState(false);
   const stars = score >= targetScore * 2 ? 3 : score >= targetScore * 1.5 ? 2 : 1;
   
+  useEffect(() => {
+    const timer = setTimeout(() => setShowContent(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
+  
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="fairy-card p-8 max-w-sm w-full text-center animate-scale-in">
-        {/* Floating sparkles */}
-        {Array.from({ length: 10 }).map((_, i) => (
-          <div
-            key={i}
-            className="sparkle text-yellow-400"
+    <div className="fixed inset-0 bg-black flex items-center justify-center z-50 overflow-hidden">
+      {/* Confetti */}
+      <Confetti count={150} />
+      
+      {/* Floating particles */}
+      {Array.from({ length: 30 }).map((_, i) => (
+        <div
+          key={`particle-${i}`}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: 4 + Math.random() * 6,
+            height: 4 + Math.random() * 6,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            background: ['#FFD700', '#FF69B4', '#00CED1', '#9370DB'][Math.floor(Math.random() * 4)],
+            animation: `float-glow ${4 + Math.random() * 4}s ease-in-out infinite`,
+            animationDelay: `${Math.random() * 4}s`,
+          }}
+        />
+      ))}
+      
+      {/* Main content */}
+      <div 
+        className={`relative text-center transition-all duration-700 ${showContent ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
+      >
+        {/* Image card with golden frame */}
+        <div className="relative mx-auto mb-6" style={{ width: '350px' }}>
+          <div 
+            className="relative rounded-2xl overflow-hidden"
             style={{
-              left: `${10 + Math.random() * 80}%`,
-              top: `${10 + Math.random() * 80}%`,
-              animationDelay: `${Math.random() * 2}s`,
-              fontSize: 12 + Math.random() * 12,
+              border: '6px solid',
+              borderImage: 'linear-gradient(135deg, #FFD700, #FFA500, #FF8C00) 1',
+              boxShadow: '0 0 40px rgba(255, 215, 0, 0.5)',
             }}
           >
-            ✨
+            <img 
+              src={crystalCaveImg} 
+              alt="Crystal Cave" 
+              className="w-full h-auto"
+              style={{
+                animation: 'image-reveal 1.5s ease-out forwards',
+              }}
+            />
+            
+            {/* Golden side panel effect */}
+            <div 
+              className="absolute top-0 right-0 w-1/3 h-full"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 165, 0, 0.9) 100%)',
+                animation: 'panel-slide 1s ease-out forwards',
+              }}
+            />
+            
+            {/* Label */}
+            <div 
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-sm font-semibold"
+              style={{
+                background: 'linear-gradient(135deg, #ec4899 0%, #d946ef 100%)',
+                color: 'white',
+              }}
+            >
+              Cueva de Cristal
+            </div>
           </div>
-        ))}
+          
+          {/* Sparkles around image */}
+          {['top-0 left-0', 'top-0 right-0', 'bottom-0 left-1/4', 'top-1/4 right-0'].map((pos, i) => (
+            <div 
+              key={i}
+              className={`absolute ${pos} text-2xl`}
+              style={{
+                animation: `sparkle-float ${1.5 + i * 0.3}s ease-in-out infinite`,
+                animationDelay: `${i * 0.2}s`,
+              }}
+            >
+              ✨
+            </div>
+          ))}
+        </div>
         
-        <Trophy className="w-16 h-16 text-yellow-400 mx-auto mb-4 drop-shadow-lg" />
-        
-        <h2 className="font-cinzel text-3xl text-foreground mb-2">
-          ¡Nivel {level} Completado!
-        </h2>
+        {/* Title */}
+        <h1 
+          className="font-cinzel text-4xl md:text-5xl font-bold mb-4"
+          style={{
+            background: 'linear-gradient(180deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            filter: 'drop-shadow(0 2px 10px rgba(255, 215, 0, 0.5))',
+          }}
+        >
+          ¡NIVEL COMPLETADO!
+        </h1>
         
         {/* Stars */}
         <div className="flex justify-center gap-2 my-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <Star
               key={i}
-              className={cn(
-                'w-10 h-10 transition-all duration-500',
-                i < stars 
-                  ? 'text-yellow-400 fill-yellow-400 drop-shadow-lg' 
-                  : 'text-muted-foreground/30'
-              )}
-              style={{ animationDelay: `${i * 0.2}s` }}
+              className="w-12 h-12 transition-all duration-500"
+              style={{ 
+                animationDelay: `${i * 0.3}s`,
+                color: i < stars ? '#FFD700' : '#4a4a4a',
+                fill: i < stars ? '#FFD700' : 'transparent',
+                filter: i < stars ? 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.8))' : 'none',
+              }}
             />
           ))}
         </div>
         
-        <div className="space-y-2 mb-6">
-          <p className="text-lg">
-            Puntuación: <span className="font-bold text-primary">{score.toLocaleString()}</span>
-          </p>
-          <p className="flex items-center justify-center gap-2 text-yellow-400">
-            <Gem className="w-5 h-5" />
-            <span className="font-bold">+{gemsEarned} Gemas</span>
-          </p>
-        </div>
+        {/* Score */}
+        <p className="text-3xl mb-6">
+          <span className="text-yellow-400 font-bold">{score}</span>
+          <span className="text-white"> puntos</span>
+        </p>
         
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={onNextLevel}
-            className="magic-button w-full"
-          >
-            Siguiente Nivel →
-          </button>
-          <button
-            onClick={onMainMenu}
-            className="px-6 py-3 rounded-full border border-border/50 hover:bg-muted/50 transition-colors"
-          >
-            Menú Principal
-          </button>
-        </div>
+        {/* Continue Button */}
+        <button
+          onClick={onNextLevel}
+          className="px-8 py-4 rounded-full font-bold text-lg transition-transform hover:scale-105"
+          style={{
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: 'white',
+            boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)',
+          }}
+        >
+          ✨ Continuar ✨
+        </button>
       </div>
+      
+      <style>{`
+        @keyframes confetti-fall {
+          0% {
+            transform: translateY(-10vh) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(110vh) rotate(720deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes float-glow {
+          0%, 100% {
+            transform: translateY(0) scale(1);
+            opacity: 0.6;
+          }
+          50% {
+            transform: translateY(-20px) scale(1.2);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes image-reveal {
+          0% {
+            transform: perspective(1000px) rotateY(-90deg);
+            opacity: 0;
+          }
+          100% {
+            transform: perspective(1000px) rotateY(0deg);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes panel-slide {
+          0% {
+            transform: translateX(100%);
+          }
+          100% {
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes sparkle-float {
+          0%, 100% {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: translateY(-10px) scale(1.3);
+            opacity: 0.7;
+          }
+        }
+      `}</style>
     </div>
   );
 });
