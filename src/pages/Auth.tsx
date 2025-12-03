@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import mysticForestBg from '@/assets/mystic-forest-bg.jpg';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,10 +13,10 @@ const Auth = () => {
   const { toast } = useToast();
 
   // Generate floating particles
-  const particles = Array.from({ length: 25 }, (_, i) => ({
+  const particles = Array.from({ length: 30 }, (_, i) => ({
     id: i,
     left: Math.random() * 100,
-    size: 4 + Math.random() * 4,
+    size: 3 + Math.random() * 5,
     delay: Math.random() * 6,
     duration: 5 + Math.random() * 4,
   }));
@@ -70,236 +71,75 @@ const Auth = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`
-      }
-    });
-    if (error) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    }
-  };
-
-  // Generate glowing mushrooms
-  const mushrooms = [
-    { emoji: '🍄', left: '5%', bottom: '10%', size: 40, delay: 0 },
-    { emoji: '🍄', left: '15%', bottom: '5%', size: 30, delay: 0.5 },
-    { emoji: '🍄', left: '85%', bottom: '8%', size: 35, delay: 0.3 },
-    { emoji: '🍄', left: '92%', bottom: '15%', size: 25, delay: 0.7 },
-    { emoji: '🍄', left: '8%', bottom: '25%', size: 20, delay: 1 },
-    { emoji: '🍄', left: '88%', bottom: '28%', size: 22, delay: 0.8 },
-    { emoji: '✨', left: '3%', bottom: '18%', size: 15, delay: 0.2 },
-    { emoji: '✨', left: '95%', bottom: '20%', size: 12, delay: 0.6 },
-    { emoji: '🦋', left: '12%', top: '15%', size: 25, delay: 1.2 },
-    { emoji: '🦋', left: '82%', top: '20%', size: 20, delay: 0.9 },
+  // Decorative elements
+  const decorations = [
+    { emoji: '🍄', left: '5%', bottom: '10%', size: 45 },
+    { emoji: '🍄', left: '15%', bottom: '5%', size: 35 },
+    { emoji: '🍄', left: '85%', bottom: '8%', size: 40 },
+    { emoji: '🍄', left: '92%', bottom: '15%', size: 30 },
+    { emoji: '🦋', left: '10%', top: '12%', size: 28 },
+    { emoji: '🦋', left: '85%', top: '18%', size: 24 },
+    { emoji: '✨', left: '3%', top: '40%', size: 16 },
+    { emoji: '✨', left: '95%', top: '35%', size: 14 },
   ];
 
   return (
-    <div className="auth-container">
-      {/* Glowing mushrooms and decorations */}
-      {mushrooms.map((mushroom, i) => (
-        <div
-          key={`mushroom-${i}`}
-          className="mushroom-decoration"
-          style={{
-            left: mushroom.left,
-            bottom: mushroom.bottom,
-            top: mushroom.top,
-            fontSize: `${mushroom.size}px`,
-            animationDelay: `${mushroom.delay}s`,
-          }}
-        >
-          {mushroom.emoji}
-        </div>
-      ))}
-
-      {/* Floating particles */}
-      {particles.map((particle) => (
-        <div
-          key={particle.id}
-          className="particle"
-          style={{
-            left: `${particle.left}%`,
-            width: `${particle.size}px`,
-            height: `${particle.size}px`,
-            animationDelay: `${particle.delay}s`,
-            animationDuration: `${particle.duration}s`,
-          }}
-        />
-      ))}
-
-      {/* Glassmorphism Card */}
-      <div className="auth-card">
-        {/* Title */}
-        <h1 className="auth-title">Mystic Garden Pro</h1>
-        <p className="auth-subtitle">🌿 Aventura Mágica de Gemas 🌿</p>
-
-        {/* Tabs */}
-        <div className="auth-tabs">
-          <button
-            className={`auth-tab ${isLogin ? 'active' : ''}`}
-            onClick={() => setIsLogin(true)}
-          >
-            Iniciar Sesión
-          </button>
-          <button
-            className={`auth-tab ${!isLogin ? 'active' : ''}`}
-            onClick={() => setIsLogin(false)}
-          >
-            Registrarse
-          </button>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="auth-form">
-          <input
-            type="email"
-            placeholder="correo@ejemplo.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="auth-input"
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            className="auth-input"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="auth-button-primary"
-          >
-            {loading ? '✨ Cargando...' : isLogin ? '✨ Entrar al Reino ✨' : '🌟 Crear Cuenta 🌟'}
-          </button>
-        </form>
-
-        {/* Divider */}
-        <div className="auth-divider">
-          <span>o</span>
-        </div>
-
-        {/* Google OAuth */}
-        <button onClick={handleGoogleLogin} className="auth-button-google">
-          <span className="google-icon">G</span>
-          Continuar con Google
-        </button>
-
-        {/* Toggle text */}
-        <p className="auth-toggle-text">
-          {isLogin ? '¿Primera vez aquí?' : '¿Ya tienes cuenta?'}{' '}
-          <button onClick={() => setIsLogin(!isLogin)} className="auth-toggle-link">
-            {isLogin ? 'Crear cuenta' : 'Iniciar sesión'}
-          </button>
-        </p>
-      </div>
-
+    <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;600&display=swap');
-
-        .auth-container {
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+        
+        .auth-page {
           min-height: 100vh;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 20px;
-          background: linear-gradient(135deg, #1a3a2e 0%, #1e3a8a 50%, #4c1d95 100%);
           position: relative;
           overflow: hidden;
-          font-family: 'Quicksand', sans-serif;
+          background-image: url(${mysticForestBg});
+          background-size: cover;
+          background-position: center;
         }
-
-        .auth-container::before {
-          content: '';
+        
+        .auth-overlay {
           position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: 
-            radial-gradient(ellipse at 20% 80%, rgba(34, 197, 94, 0.2) 0%, transparent 50%),
-            radial-gradient(ellipse at 80% 20%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
-            radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+          inset: 0;
+          background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .auth-decoration {
+          position: absolute;
+          z-index: 10;
           pointer-events: none;
+          animation: float-glow 3s ease-in-out infinite;
         }
-
-        .particle {
+        
+        .auth-particle {
           position: absolute;
-          bottom: -20px;
-          background: radial-gradient(circle, #fff 0%, rgba(255, 215, 0, 0.8) 50%, transparent 100%);
           border-radius: 50%;
           pointer-events: none;
-          animation: float-up linear infinite;
-          box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 255, 255, 0.5);
+          z-index: 10;
+          background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,215,0,0.6));
+          box-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
-
-        @keyframes float-up {
-          0% {
-            transform: translateY(0) translateX(0) scale(0.5);
-            opacity: 0;
-          }
-          10% {
-            opacity: 1;
-            transform: translateY(-10vh) translateX(5px) scale(1);
-          }
-          50% {
-            transform: translateY(-50vh) translateX(-10px) scale(1.2);
-          }
-          90% {
-            opacity: 0.9;
-          }
-          100% {
-            transform: translateY(-100vh) translateX(15px) scale(0.8);
-            opacity: 0;
-          }
-        }
-
-        .mushroom-decoration {
-          position: absolute;
-          pointer-events: none;
-          z-index: 5;
-          animation: mushroom-glow 3s ease-in-out infinite;
-          filter: drop-shadow(0 0 15px rgba(255, 100, 100, 0.6));
-        }
-
-        @keyframes mushroom-glow {
-          0%, 100% {
-            filter: drop-shadow(0 0 10px rgba(255, 100, 100, 0.4));
-            transform: scale(1);
-          }
-          50% {
-            filter: drop-shadow(0 0 25px rgba(255, 150, 150, 0.8));
-            transform: scale(1.1);
-          }
-        }
-
+        
         .auth-card {
+          position: relative;
+          z-index: 20;
           width: 100%;
           max-width: 420px;
+          padding: 40px 30px;
+          border-radius: 20px;
           background: rgba(255, 255, 255, 0.1);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          border-radius: 20px;
-          padding: 40px 30px;
           border: 2px solid rgba(255, 215, 0, 0.3);
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-          position: relative;
-          z-index: 10;
         }
-
+        
         .auth-title {
           font-family: 'Fredoka', sans-serif;
-          font-size: clamp(2rem, 8vw, 2.8rem);
+          font-size: 2.5rem;
           font-weight: 700;
           text-align: center;
           margin: 0 0 8px 0;
@@ -307,26 +147,25 @@ const Auth = () => {
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
-          text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
           filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
         }
-
+        
         .auth-subtitle {
           text-align: center;
           color: rgba(255, 255, 255, 0.8);
           font-size: 0.95rem;
           margin: 0 0 25px 0;
         }
-
+        
         .auth-tabs {
           display: flex;
-          gap: 10px;
+          gap: 8px;
           margin-bottom: 25px;
           background: rgba(0, 0, 0, 0.2);
           border-radius: 30px;
           padding: 5px;
         }
-
+        
         .auth-tab {
           flex: 1;
           padding: 12px 20px;
@@ -334,29 +173,25 @@ const Auth = () => {
           border-radius: 25px;
           background: transparent;
           color: rgba(255, 255, 255, 0.6);
-          font-family: 'Quicksand', sans-serif;
+          font-family: inherit;
           font-size: 0.95rem;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
         }
-
+        
         .auth-tab.active {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
           box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
-
-        .auth-tab:hover:not(.active) {
-          color: rgba(255, 255, 255, 0.9);
-        }
-
+        
         .auth-form {
           display: flex;
           flex-direction: column;
           gap: 15px;
         }
-
+        
         .auth-input {
           width: 100%;
           padding: 14px 18px;
@@ -364,23 +199,23 @@ const Auth = () => {
           border: 2px solid rgba(255, 215, 0, 0.2);
           border-radius: 12px;
           color: white;
-          font-family: 'Quicksand', sans-serif;
+          font-family: inherit;
           font-size: 1rem;
           outline: none;
           transition: all 0.3s ease;
           box-sizing: border-box;
         }
-
+        
         .auth-input::placeholder {
           color: rgba(255, 255, 255, 0.5);
         }
-
+        
         .auth-input:focus {
           border-color: rgba(255, 215, 0, 0.6);
           box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
         }
-
-        .auth-button-primary {
+        
+        .auth-button {
           width: 100%;
           padding: 14px 40px;
           margin-top: 5px;
@@ -395,80 +230,24 @@ const Auth = () => {
           transition: all 0.3s ease;
           box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
-
-        .auth-button-primary:hover:not(:disabled) {
+        
+        .auth-button:hover:not(:disabled) {
           transform: translateY(-3px) scale(1.02);
           box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
         }
-
-        .auth-button-primary:disabled {
+        
+        .auth-button:disabled {
           opacity: 0.7;
           cursor: not-allowed;
         }
-
-        .auth-divider {
-          display: flex;
-          align-items: center;
-          margin: 20px 0;
-          gap: 15px;
-        }
-
-        .auth-divider::before,
-        .auth-divider::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: rgba(255, 255, 255, 0.2);
-        }
-
-        .auth-divider span {
-          color: rgba(255, 255, 255, 0.5);
-          font-size: 0.9rem;
-        }
-
-        .auth-button-google {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-          padding: 12px 30px;
-          background: white;
-          border: 2px solid #ddd;
-          border-radius: 50px;
-          color: #333;
-          font-family: 'Quicksand', sans-serif;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .auth-button-google:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .google-icon {
-          width: 24px;
-          height: 24px;
-          background: linear-gradient(135deg, #4285F4 25%, #EA4335 25%, #EA4335 50%, #FBBC05 50%, #FBBC05 75%, #34A853 75%);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: bold;
-          font-size: 14px;
-        }
-
-        .auth-toggle-text {
+        
+        .auth-toggle {
           text-align: center;
           color: rgba(255, 255, 255, 0.7);
           font-size: 0.9rem;
           margin-top: 20px;
         }
-
+        
         .auth-toggle-link {
           background: none;
           border: none;
@@ -477,14 +256,139 @@ const Auth = () => {
           cursor: pointer;
           text-decoration: underline;
           font-size: 0.9rem;
-          font-family: 'Quicksand', sans-serif;
+          font-family: inherit;
         }
-
+        
         .auth-toggle-link:hover {
           color: #FFA500;
         }
+        
+        @keyframes float-up {
+          0% {
+            transform: translateY(0) translateX(0);
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 0.8;
+          }
+          100% {
+            transform: translateY(-100vh) translateX(20px);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes float-glow {
+          0%, 100% {
+            transform: scale(1) translateY(0);
+            filter: drop-shadow(0 0 10px rgba(255, 100, 150, 0.4));
+          }
+          50% {
+            transform: scale(1.1) translateY(-5px);
+            filter: drop-shadow(0 0 20px rgba(255, 150, 200, 0.7));
+          }
+        }
       `}</style>
-    </div>
+      
+      <div className="auth-page">
+        {/* Overlay */}
+        <div className="auth-overlay" />
+
+        {/* Decorative elements */}
+        {decorations.map((dec, i) => (
+          <div
+            key={i}
+            className="auth-decoration"
+            style={{
+              left: dec.left,
+              bottom: dec.bottom,
+              top: dec.top,
+              fontSize: `${dec.size}px`,
+              animationDelay: `${i * 0.3}s`,
+            }}
+          >
+            {dec.emoji}
+          </div>
+        ))}
+
+        {/* Floating particles */}
+        {particles.map((particle) => (
+          <div
+            key={particle.id}
+            className="auth-particle"
+            style={{
+              left: `${particle.left}%`,
+              bottom: '-10px',
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              animation: `float-up ${particle.duration}s linear infinite`,
+              animationDelay: `${particle.delay}s`,
+            }}
+          />
+        ))}
+
+        {/* Card */}
+        <div className="auth-card">
+          {/* Title */}
+          <h1 className="auth-title">Mystic Garden Pro</h1>
+          <p className="auth-subtitle">🌿 Aventura Mágica de Gemas 🌿</p>
+
+          {/* Tabs */}
+          <div className="auth-tabs">
+            <button
+              className={`auth-tab ${isLogin ? 'active' : ''}`}
+              onClick={() => setIsLogin(true)}
+            >
+              Iniciar Sesión
+            </button>
+            <button
+              className={`auth-tab ${!isLogin ? 'active' : ''}`}
+              onClick={() => setIsLogin(false)}
+            >
+              Registrarse
+            </button>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="auth-form">
+            <input
+              type="email"
+              placeholder="correo@ejemplo.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="auth-input"
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="auth-input"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="auth-button"
+            >
+              {loading ? '✨ Cargando...' : isLogin ? '✨ Entrar al Reino ✨' : '🌟 Crear Cuenta 🌟'}
+            </button>
+          </form>
+
+          {/* Toggle text */}
+          <p className="auth-toggle">
+            {isLogin ? '¿Primera vez aquí?' : '¿Ya tienes cuenta?'}{' '}
+            <button onClick={() => setIsLogin(!isLogin)} className="auth-toggle-link">
+              {isLogin ? 'Crear cuenta' : 'Iniciar sesión'}
+            </button>
+          </p>
+        </div>
+      </div>
+    </>
   );
 };
 
