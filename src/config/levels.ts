@@ -25,13 +25,13 @@ export const LEVELS: LevelConfig[] = [
 export const GEM_TYPES = ['red', 'blue', 'green', 'yellow', 'purple', 'pink', 'cyan'] as const;
 
 export const GEM_EMOJIS: Record<string, string> = {
-  red: '🌹',
+  red: '🍄',
   blue: '💎',
-  green: '🍀',
-  yellow: '⭐',
-  purple: '🔮',
-  pink: '🌸',
-  cyan: '❄️',
+  green: '🧚',
+  yellow: '✨',
+  purple: '🦋',
+  pink: '🌙',
+  cyan: '🔮',
 };
 
 export const SPECIAL_EMOJIS: Record<string, string> = {
