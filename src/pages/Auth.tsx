@@ -86,8 +86,39 @@ const Auth = () => {
     }
   };
 
+  // Generate glowing mushrooms
+  const mushrooms = [
+    { emoji: '🍄', left: '5%', bottom: '10%', size: 40, delay: 0 },
+    { emoji: '🍄', left: '15%', bottom: '5%', size: 30, delay: 0.5 },
+    { emoji: '🍄', left: '85%', bottom: '8%', size: 35, delay: 0.3 },
+    { emoji: '🍄', left: '92%', bottom: '15%', size: 25, delay: 0.7 },
+    { emoji: '🍄', left: '8%', bottom: '25%', size: 20, delay: 1 },
+    { emoji: '🍄', left: '88%', bottom: '28%', size: 22, delay: 0.8 },
+    { emoji: '✨', left: '3%', bottom: '18%', size: 15, delay: 0.2 },
+    { emoji: '✨', left: '95%', bottom: '20%', size: 12, delay: 0.6 },
+    { emoji: '🦋', left: '12%', top: '15%', size: 25, delay: 1.2 },
+    { emoji: '🦋', left: '82%', top: '20%', size: 20, delay: 0.9 },
+  ];
+
   return (
     <div className="auth-container">
+      {/* Glowing mushrooms and decorations */}
+      {mushrooms.map((mushroom, i) => (
+        <div
+          key={`mushroom-${i}`}
+          className="mushroom-decoration"
+          style={{
+            left: mushroom.left,
+            bottom: mushroom.bottom,
+            top: mushroom.top,
+            fontSize: `${mushroom.size}px`,
+            animationDelay: `${mushroom.delay}s`,
+          }}
+        >
+          {mushroom.emoji}
+        </div>
+      ))}
+
       {/* Floating particles */}
       {particles.map((particle) => (
         <div
@@ -205,27 +236,50 @@ const Auth = () => {
         .particle {
           position: absolute;
           bottom: -20px;
-          background: rgba(255, 255, 255, 0.7);
+          background: radial-gradient(circle, #fff 0%, rgba(255, 215, 0, 0.8) 50%, transparent 100%);
           border-radius: 50%;
           pointer-events: none;
           animation: float-up linear infinite;
-          box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+          box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 255, 255, 0.5);
         }
 
         @keyframes float-up {
           0% {
-            transform: translateY(0) translateX(0);
+            transform: translateY(0) translateX(0) scale(0.5);
             opacity: 0;
           }
           10% {
             opacity: 1;
+            transform: translateY(-10vh) translateX(5px) scale(1);
+          }
+          50% {
+            transform: translateY(-50vh) translateX(-10px) scale(1.2);
           }
           90% {
-            opacity: 0.8;
+            opacity: 0.9;
           }
           100% {
-            transform: translateY(-100vh) translateX(20px);
+            transform: translateY(-100vh) translateX(15px) scale(0.8);
             opacity: 0;
+          }
+        }
+
+        .mushroom-decoration {
+          position: absolute;
+          pointer-events: none;
+          z-index: 5;
+          animation: mushroom-glow 3s ease-in-out infinite;
+          filter: drop-shadow(0 0 15px rgba(255, 100, 100, 0.6));
+        }
+
+        @keyframes mushroom-glow {
+          0%, 100% {
+            filter: drop-shadow(0 0 10px rgba(255, 100, 100, 0.4));
+            transform: scale(1);
+          }
+          50% {
+            filter: drop-shadow(0 0 25px rgba(255, 150, 150, 0.8));
+            transform: scale(1.1);
           }
         }
 
