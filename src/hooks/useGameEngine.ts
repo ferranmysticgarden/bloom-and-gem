@@ -257,31 +257,26 @@ export const useGameEngine = () => {
           const newUnlockedLevels = Math.max(prev.unlockedLevels, prev.level + 1);
           const newGems = prev.gems + Math.floor(prev.score / 100);
           
-          // Save progress to database
-          saveProgress({
-            unlockedLevels: newUnlockedLevels,
-            gems: newGems,
-          });
-          
           return {
             ...prev,
             isPlaying: false,
             unlockedLevels: newUnlockedLevels,
             totalScore: prev.totalScore + prev.score,
             gems: newGems,
-          };
+            // Mark for saving
+            _shouldSave: { won: true, unlockedLevels: newUnlockedLevels, gems: newGems },
+          } as GameState & { _shouldSave?: unknown };
         }
         if (prev.moves <= 0) {
           const newLives = prev.lives - 1;
-          
-          // Save lives to database
-          saveProgress({ lives: newLives });
           
           return {
             ...prev,
             isPlaying: false,
             lives: newLives,
-          };
+            // Mark for saving
+            _shouldSave: { lost: true, lives: newLives },
+          } as GameState & { _shouldSave?: unknown };
         }
         return { ...prev, combo: 0 };
       }
@@ -297,7 +292,31 @@ export const useGameEngine = () => {
         combo: prev.combo + 1,
       };
     });
-  }, [findMatches, removeMatches, applyGravity, saveProgress]);
+  }, [findMatches, removeMatches, applyGravity]);
+
+  // Effect to save progress when game ends
+  const prevIsPlayingRef = useRef(gameState.isPlaying);
+  useEffect(() => {
+    const wasPlaying = prevIsPlayingRef.current;
+    const isNowPlaying = gameState.isPlaying;
+    prevIsPlayingRef.current = isNowPlaying;
+
+    // Game just ended
+    if (wasPlaying && !isNowPlaying && gameState.board.length > 0) {
+      const won = gameState.score >= gameState.targetScore;
+      
+      if (won) {
+        console.log('Level won! Saving progress...');
+        saveProgress({
+          unlockedLevels: gameState.unlockedLevels,
+          gems: gameState.gems,
+        });
+      } else {
+        console.log('Level lost! Saving lives...');
+        saveProgress({ lives: gameState.lives });
+      }
+    }
+  }, [gameState.isPlaying, gameState.score, gameState.targetScore, gameState.unlockedLevels, gameState.gems, gameState.lives, gameState.board.length, saveProgress]);
 
   const useBomb = useCallback((pos: Position) => {
     setGameState(prev => {
