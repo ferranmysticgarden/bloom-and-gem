@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.3c83a2f747cb4ba390ff4fe57d4d7b89',
+  appId: 'com.mysticgarden.pro',
   appName: 'Mystic Garden Pro',
   webDir: 'dist',
   server: {
