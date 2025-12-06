@@ -37,7 +37,7 @@ export const useGameProgress = () => {
         .from('game_progress')
         .select('*')
         .eq('user_id', uid)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error loading progress:', error);
@@ -91,7 +91,12 @@ export const useGameProgress = () => {
 
   // Save progress to database
   const saveProgress = useCallback(async (newProgress: Partial<GameProgress>) => {
-    if (!userId) return;
+    if (!userId) {
+      console.error('saveProgress called but userId is null');
+      return;
+    }
+
+    console.log('Saving progress for user:', userId, newProgress);
 
     const updateData: Record<string, unknown> = {};
     
@@ -107,14 +112,16 @@ export const useGameProgress = () => {
 
     updateData.updated_at = new Date().toISOString();
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('game_progress')
       .update(updateData)
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .select();
 
     if (error) {
       console.error('Error saving progress:', error);
     } else {
+      console.log('Progress saved successfully:', data);
       setProgress(prev => ({ ...prev, ...newProgress }));
     }
   }, [userId]);
