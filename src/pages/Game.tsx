@@ -170,7 +170,7 @@ const Game = () => {
   // Playing screen
   return (
     <div 
-      className="min-h-screen flex flex-col p-4 relative"
+      className="min-h-screen min-h-[100dvh] flex flex-col p-2 sm:p-4 relative overflow-hidden"
       style={{
         backgroundImage: `url(${mysticForestBg})`,
         backgroundSize: 'cover',
@@ -180,25 +180,25 @@ const Game = () => {
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/20" />
 
-      {/* Floating particles */}
-      {Array.from({ length: 20 }).map((_, i) => (
+      {/* Floating particles - reduced for mobile performance */}
+      {Array.from({ length: 10 }).map((_, i) => (
         <div
           key={i}
           className="absolute rounded-full pointer-events-none z-0"
           style={{
-            width: 3 + Math.random() * 5,
-            height: 3 + Math.random() * 5,
+            width: 3 + Math.random() * 4,
+            height: 3 + Math.random() * 4,
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
-            background: `radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,215,0,0.6))`,
-            boxShadow: '0 0 10px rgba(255,215,0,0.5)',
+            background: `radial-gradient(circle, hsla(0, 0%, 100%, 0.9), hsla(45, 100%, 50%, 0.6))`,
+            boxShadow: '0 0 10px hsla(45, 100%, 50%, 0.5)',
             animation: `float-particle ${6 + Math.random() * 6}s ease-in-out infinite`,
             animationDelay: `${Math.random() * 8}s`,
           }}
         />
       ))}
 
-      <div className="relative z-10 flex flex-col flex-1">
+      <div className="relative z-10 flex flex-col flex-1 max-w-lg mx-auto w-full">
         <GameHeader
           level={gameState.level}
           score={gameState.score}
