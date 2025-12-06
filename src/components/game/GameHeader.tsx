@@ -22,15 +22,15 @@ export const GameHeader = memo(({
   
   return (
     <div 
-      className="mx-auto w-full max-w-lg p-4 rounded-2xl mb-4"
+      className="mx-auto w-full max-w-lg p-3 rounded-xl mb-2"
       style={{
-        background: 'linear-gradient(135deg, rgba(60, 20, 80, 0.95) 0%, rgba(40, 15, 60, 0.95) 100%)',
-        border: '2px solid rgba(150, 100, 200, 0.3)',
-        boxShadow: '0 4px 20px rgba(100, 50, 150, 0.3)',
+        background: 'linear-gradient(135deg, hsla(280, 50%, 20%, 0.95) 0%, hsla(270, 50%, 15%, 0.95) 100%)',
+        border: '2px solid hsla(280, 50%, 50%, 0.3)',
+        boxShadow: '0 4px 20px hsla(280, 50%, 40%, 0.3)',
       }}
     >
       {/* Top row - Level and Exit */}
-      <div className="flex justify-between items-center mb-3">
+      <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-2">
           <div 
             className="w-10 h-10 rounded-lg flex items-center justify-center"
@@ -60,33 +60,33 @@ export const GameHeader = memo(({
       </div>
       
       {/* Stats row */}
-      <div className="flex gap-3 mb-3">
+      <div className="flex gap-2 mb-2">
         <div 
-          className="flex-1 p-3 rounded-xl"
+          className="flex-1 p-2 rounded-lg"
           style={{
-            background: 'rgba(0, 0, 0, 0.3)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'hsla(0, 0%, 0%, 0.3)',
+            border: '1px solid hsla(0, 0%, 100%, 0.1)',
           }}
         >
-          <div className="flex items-center gap-2 mb-1">
-            <Zap className="w-4 h-4 text-yellow-400" />
-            <span className="text-white/60 text-xs uppercase">Movimientos</span>
+          <div className="flex items-center gap-1 mb-0.5">
+            <Zap className="w-3 h-3 text-yellow-400" />
+            <span className="text-white/60 text-[10px] uppercase">Movimientos</span>
           </div>
-          <p className="text-white font-bold text-2xl">{moves}</p>
+          <p className="text-white font-bold text-xl">{moves}</p>
         </div>
         
         <div 
-          className="flex-1 p-3 rounded-xl"
+          className="flex-1 p-2 rounded-lg"
           style={{
-            background: 'rgba(0, 0, 0, 0.3)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'hsla(0, 0%, 0%, 0.3)',
+            border: '1px solid hsla(0, 0%, 100%, 0.1)',
           }}
         >
-          <div className="flex items-center gap-2 mb-1">
-            <Target className="w-4 h-4 text-pink-400" />
-            <span className="text-white/60 text-xs uppercase">Puntuación</span>
+          <div className="flex items-center gap-1 mb-0.5">
+            <Target className="w-3 h-3 text-pink-400" />
+            <span className="text-white/60 text-[10px] uppercase">Puntuación</span>
           </div>
-          <p className="text-white font-bold text-2xl">{score}</p>
+          <p className="text-white font-bold text-xl">{score}</p>
         </div>
       </div>
       
