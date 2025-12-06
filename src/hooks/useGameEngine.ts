@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Gem, GemType, Position, GameState, SpecialGemType } from '@/types/game';
 import { LEVELS, GEM_TYPES } from '@/config/levels';
+import { useGameProgress } from './useGameProgress';
 
 const BOARD_SIZE = 8;
 
@@ -29,6 +30,9 @@ const createGem = (row: number, col: number, numTypes: number, specialChance: nu
 };
 
 export const useGameEngine = () => {
+  const { progress, loading, saveProgress } = useGameProgress();
+  const initializedRef = useRef(false);
+  
   const [gameState, setGameState] = useState<GameState>({
     board: [],
     score: 0,
@@ -48,6 +52,24 @@ export const useGameEngine = () => {
     totalScore: 0,
     streak: 0,
   });
+
+  // Sync progress from database when loaded
+  useEffect(() => {
+    if (!loading && !initializedRef.current) {
+      initializedRef.current = true;
+      setGameState(prev => ({
+        ...prev,
+        lives: progress.lives,
+        gems: progress.gems,
+        unlockedLevels: progress.unlockedLevels,
+        boosters: {
+          ...prev.boosters,
+          bomb: progress.bombs,
+          hammer: progress.hammers,
+        },
+      }));
+    }
+  }, [loading, progress]);
 
   const initializeBoard = useCallback((level: number) => {
     const config = LEVELS[level - 1] || LEVELS[0];
@@ -232,19 +254,33 @@ export const useGameEngine = () => {
       if (matches.length === 0) {
         // Check win/lose condition
         if (prev.score >= prev.targetScore) {
+          const newUnlockedLevels = Math.max(prev.unlockedLevels, prev.level + 1);
+          const newGems = prev.gems + Math.floor(prev.score / 100);
+          
+          // Save progress to database
+          saveProgress({
+            unlockedLevels: newUnlockedLevels,
+            gems: newGems,
+          });
+          
           return {
             ...prev,
             isPlaying: false,
-            unlockedLevels: Math.max(prev.unlockedLevels, prev.level + 1),
+            unlockedLevels: newUnlockedLevels,
             totalScore: prev.totalScore + prev.score,
-            gems: prev.gems + Math.floor(prev.score / 100),
+            gems: newGems,
           };
         }
         if (prev.moves <= 0) {
+          const newLives = prev.lives - 1;
+          
+          // Save lives to database
+          saveProgress({ lives: newLives });
+          
           return {
             ...prev,
             isPlaying: false,
-            lives: prev.lives - 1,
+            lives: newLives,
           };
         }
         return { ...prev, combo: 0 };
@@ -261,7 +297,7 @@ export const useGameEngine = () => {
         combo: prev.combo + 1,
       };
     });
-  }, [findMatches, removeMatches, applyGravity]);
+  }, [findMatches, removeMatches, applyGravity, saveProgress]);
 
   const useBomb = useCallback((pos: Position) => {
     setGameState(prev => {
@@ -363,5 +399,6 @@ export const useGameEngine = () => {
     useBomb,
     useHammer,
     shuffleBoard,
+    loading,
   };
 };

@@ -18,7 +18,7 @@ type GameScreen = 'menu' | 'level-select' | 'playing' | 'paused' | 'shop';
 
 const Game = () => {
   const navigate = useNavigate();
-  const { gameState, setGameState, startLevel, selectGem, swapGems, useBomb, useHammer, shuffleBoard } = useGameEngine();
+  const { gameState, setGameState, startLevel, selectGem, swapGems, useBomb, useHammer, shuffleBoard, loading } = useGameEngine();
   const [screen, setScreen] = useState<GameScreen>('menu');
   const [activeBooster, setActiveBooster] = useState<string | null>(null);
   const [showDailyReward, setShowDailyReward] = useState(false);
@@ -112,6 +112,22 @@ const Game = () => {
   // Determine if level is won or lost
   const isLevelWon = !gameState.isPlaying && gameState.score >= gameState.targetScore && gameState.board.length > 0;
   const isLevelLost = !gameState.isPlaying && gameState.score < gameState.targetScore && gameState.moves <= 0 && gameState.board.length > 0;
+
+  // Loading screen
+  if (loading) {
+    return (
+      <div 
+        className="min-h-screen min-h-[100dvh] flex items-center justify-center"
+        style={{
+          backgroundImage: `url(${mysticForestBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="text-white text-xl font-cinzel animate-pulse">Cargando...</div>
+      </div>
+    );
+  }
 
   // Menu screen
   if (screen === 'menu') {
