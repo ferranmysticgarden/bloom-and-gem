@@ -90,17 +90,24 @@ const Game = () => {
   }, [activeBooster, useBomb, useHammer, selectGem]);
 
   const handleClaimDailyReward = useCallback(() => {
-    const streak = (gameState.streak % 7) + 1;
-    const reward = DAILY_REWARDS[streak - 1];
+    const streak = ((gameState.streak || 0) % 7) + 1;
+    const rewardIndex = Math.max(0, Math.min(streak - 1, DAILY_REWARDS.length - 1));
+    const reward = DAILY_REWARDS[rewardIndex] || DAILY_REWARDS[0];
+    
+    if (!reward) {
+      console.error('No reward found for streak:', streak);
+      setShowDailyReward(false);
+      return;
+    }
     
     setGameState(prev => ({
       ...prev,
-      gems: prev.gems + reward.gems,
+      gems: prev.gems + (reward.gems || 0),
       boosters: {
-        bomb: prev.boosters.bomb + (reward.boosters.bomb || 0),
-        hammer: prev.boosters.hammer + (reward.boosters.hammer || 0),
-        shuffle: prev.boosters.shuffle + (reward.boosters.shuffle || 0),
-        rainbow: prev.boosters.rainbow + (reward.boosters.rainbow || 0),
+        bomb: prev.boosters.bomb + (reward.boosters?.bomb || 0),
+        hammer: prev.boosters.hammer + (reward.boosters?.hammer || 0),
+        shuffle: prev.boosters.shuffle + (reward.boosters?.shuffle || 0),
+        rainbow: prev.boosters.rainbow + (reward.boosters?.rainbow || 0),
       },
       streak: streak,
     }));

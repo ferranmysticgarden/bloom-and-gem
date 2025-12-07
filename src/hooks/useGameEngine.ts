@@ -72,21 +72,32 @@ export const useGameEngine = () => {
   }, [loading, progress]);
 
   const initializeBoard = useCallback((level: number) => {
-    const config = LEVELS[level - 1] || LEVELS[0];
-    const size = config.gridSize;
+    const safeLevel = Math.max(1, level || 1);
+    const levelIndex = Math.min(safeLevel - 1, LEVELS.length - 1);
+    const config = LEVELS[levelIndex] || LEVELS[0];
+    
+    if (!config) {
+      console.error('No level config found for level:', level);
+      return [];
+    }
+    
+    const size = config.gridSize || 6;
     const board: (Gem | null)[][] = [];
     
     for (let row = 0; row < size; row++) {
       board[row] = [];
       for (let col = 0; col < size; col++) {
-        let gem = createGem(row, col, config.gemTypes, 0);
+        let gem = createGem(row, col, config.gemTypes || 4, 0);
+        let attempts = 0;
         
-        // Prevent initial matches
+        // Prevent initial matches with max attempts to avoid infinite loop
         while (
-          (col >= 2 && board[row][col - 1]?.type === gem.type && board[row][col - 2]?.type === gem.type) ||
-          (row >= 2 && board[row - 1]?.[col]?.type === gem.type && board[row - 2]?.[col]?.type === gem.type)
+          attempts < 10 &&
+          ((col >= 2 && board[row][col - 1]?.type === gem.type && board[row][col - 2]?.type === gem.type) ||
+          (row >= 2 && board[row - 1]?.[col]?.type === gem.type && board[row - 2]?.[col]?.type === gem.type))
         ) {
-          gem = createGem(row, col, config.gemTypes, 0);
+          gem = createGem(row, col, config.gemTypes || 4, 0);
+          attempts++;
         }
         
         board[row][col] = gem;
@@ -97,16 +108,29 @@ export const useGameEngine = () => {
   }, []);
 
   const startLevel = useCallback((level: number) => {
-    const config = LEVELS[level - 1] || LEVELS[0];
-    const board = initializeBoard(level);
+    const safeLevel = Math.max(1, level || 1);
+    const levelIndex = Math.min(safeLevel - 1, LEVELS.length - 1);
+    const config = LEVELS[levelIndex] || LEVELS[0];
+    
+    if (!config) {
+      console.error('No level config found');
+      return;
+    }
+    
+    const board = initializeBoard(safeLevel);
+    
+    if (!board || board.length === 0) {
+      console.error('Failed to initialize board');
+      return;
+    }
     
     setGameState(prev => ({
       ...prev,
       board,
       score: 0,
-      moves: config.moves,
-      targetScore: config.targetScore,
-      level,
+      moves: config.moves || 20,
+      targetScore: config.targetScore || 500,
+      level: safeLevel,
       isPlaying: true,
       selectedGem: null,
       combo: 0,

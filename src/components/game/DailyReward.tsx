@@ -10,7 +10,10 @@ interface DailyRewardProps {
 }
 
 export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps) => {
-  const todayReward = DAILY_REWARDS[(streak - 1) % 7];
+  // Ensure streak is at least 1 and get safe index
+  const safeStreak = Math.max(1, streak || 1);
+  const rewardIndex = Math.max(0, Math.min((safeStreak - 1) % 7, DAILY_REWARDS.length - 1));
+  const todayReward = DAILY_REWARDS[rewardIndex] || DAILY_REWARDS[0];
   
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
