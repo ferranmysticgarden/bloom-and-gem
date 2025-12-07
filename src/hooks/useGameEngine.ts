@@ -8,8 +8,9 @@ const BOARD_SIZE = 8;
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
 const getRandomGemType = (numTypes: number): GemType => {
-  const types = GEM_TYPES.slice(0, numTypes);
-  return types[Math.floor(Math.random() * types.length)];
+  const safeNumTypes = Math.max(1, Math.min(numTypes || 4, GEM_TYPES.length));
+  const types = GEM_TYPES.slice(0, safeNumTypes);
+  return types[Math.floor(Math.random() * types.length)] || 'red';
 };
 
 const createGem = (row: number, col: number, numTypes: number, specialChance: number): Gem => {
@@ -141,8 +142,11 @@ export const useGameEngine = () => {
     const matches: Position[] = [];
     const size = board.length;
     
+    if (size === 0) return matches;
+    
     // Horizontal matches
     for (let row = 0; row < size; row++) {
+      if (!board[row]) continue;
       for (let col = 0; col < size - 2; col++) {
         const gem = board[row][col];
         if (gem && board[row][col + 1]?.type === gem.type && board[row][col + 2]?.type === gem.type) {
@@ -162,6 +166,7 @@ export const useGameEngine = () => {
     // Vertical matches
     for (let col = 0; col < size; col++) {
       for (let row = 0; row < size - 2; row++) {
+        if (!board[row]) continue;
         const gem = board[row][col];
         if (gem && board[row + 1]?.[col]?.type === gem.type && board[row + 2]?.[col]?.type === gem.type) {
           let matchLength = 3;
@@ -191,16 +196,21 @@ export const useGameEngine = () => {
   }, []);
 
   const applyGravity = useCallback((board: (Gem | null)[][], level: number): (Gem | null)[][] => {
-    const config = LEVELS[level - 1] || LEVELS[0];
+    const safeLevel = Math.max(1, level || 1);
+    const levelIndex = Math.min(safeLevel - 1, LEVELS.length - 1);
+    const config = LEVELS[levelIndex] || LEVELS[0];
     const size = board.length;
+    
+    if (size === 0) return board;
+    
     const newBoard = board.map(row => [...row]);
     
     for (let col = 0; col < size; col++) {
       let emptyRow = size - 1;
       
       for (let row = size - 1; row >= 0; row--) {
-        if (newBoard[row][col] !== null) {
-          if (row !== emptyRow) {
+        if (newBoard[row] && newBoard[row][col] !== null) {
+          if (row !== emptyRow && newBoard[emptyRow]) {
             newBoard[emptyRow][col] = { ...newBoard[row][col]!, row: emptyRow, isFalling: true };
             newBoard[row][col] = null;
           }
@@ -210,7 +220,9 @@ export const useGameEngine = () => {
       
       // Fill empty spaces with new gems
       for (let row = emptyRow; row >= 0; row--) {
-        newBoard[row][col] = createGem(row, col, config.gemTypes, config.specialChance);
+        if (newBoard[row]) {
+          newBoard[row][col] = createGem(row, col, config?.gemTypes || 4, config?.specialChance || 0);
+        }
       }
     }
     

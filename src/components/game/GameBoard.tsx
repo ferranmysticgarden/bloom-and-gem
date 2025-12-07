@@ -35,8 +35,17 @@ const useWindowSize = () => {
 };
 
 export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: GameBoardProps) => {
-  const size = board.length;
+  const size = board?.length || 0;
   const { width: windowWidth, height: windowHeight } = useWindowSize();
+  
+  // Return early if no board
+  if (size === 0 || !board[0]) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-white/60">Cargando tablero...</div>
+      </div>
+    );
+  }
   
   // Calcular el tamaño de celda basado en el espacio disponible
   // Dejamos margen para header, booster bar y padding
