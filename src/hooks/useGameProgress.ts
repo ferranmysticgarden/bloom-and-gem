@@ -41,20 +41,22 @@ export const useGameProgress = () => {
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error loading progress:', error);
+        // Use default progress on error
+        setProgress(DEFAULT_PROGRESS);
         return;
       }
 
       if (data) {
         setProgress({
-          lives: data.lives,
-          gems: data.gems,
-          leaves: data.leaves,
-          currentLevel: data.current_level,
-          unlockedLevels: data.unlocked_levels,
-          hammers: data.hammers,
-          bombs: data.bombs,
-          lastLifeRefill: data.last_life_refill,
-          unlimitedLivesUntil: data.unlimited_lives_until,
+          lives: data.lives ?? DEFAULT_PROGRESS.lives,
+          gems: data.gems ?? DEFAULT_PROGRESS.gems,
+          leaves: data.leaves ?? DEFAULT_PROGRESS.leaves,
+          currentLevel: data.current_level ?? DEFAULT_PROGRESS.currentLevel,
+          unlockedLevels: data.unlocked_levels ?? DEFAULT_PROGRESS.unlockedLevels,
+          hammers: data.hammers ?? DEFAULT_PROGRESS.hammers,
+          bombs: data.bombs ?? DEFAULT_PROGRESS.bombs,
+          lastLifeRefill: data.last_life_refill ?? DEFAULT_PROGRESS.lastLifeRefill,
+          unlimitedLivesUntil: data.unlimited_lives_until ?? DEFAULT_PROGRESS.unlimitedLivesUntil,
         });
       } else {
         // Create initial progress
@@ -62,6 +64,8 @@ export const useGameProgress = () => {
       }
     } catch (err) {
       console.error('Failed to load progress:', err);
+      // Use default progress on error
+      setProgress(DEFAULT_PROGRESS);
     } finally {
       setLoading(false);
     }
@@ -128,11 +132,17 @@ export const useGameProgress = () => {
 
   // Initialize auth listener
   useEffect(() => {
+    let mounted = true;
+    
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      
       if (session?.user) {
         setUserId(session.user.id);
         setTimeout(() => {
-          loadProgress(session.user.id);
+          if (mounted) {
+            loadProgress(session.user.id);
+          }
         }, 0);
       } else {
         setUserId(null);
@@ -143,15 +153,25 @@ export const useGameProgress = () => {
 
     // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      
       if (session?.user) {
         setUserId(session.user.id);
         loadProgress(session.user.id);
       } else {
         setLoading(false);
       }
+    }).catch((err) => {
+      console.error('Error getting session:', err);
+      if (mounted) {
+        setLoading(false);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [loadProgress]);
 
   return {
