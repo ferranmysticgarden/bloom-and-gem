@@ -27,18 +27,28 @@ const Game = () => {
   // Check auth and show daily reward
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Auth error:', error);
+          navigate('/auth');
+          return;
+        }
+        if (!session) {
+          navigate('/auth');
+          return;
+        }
+        setUserEmail(session.user.email || '');
+        
+        // Check daily reward
+        const lastReward = localStorage.getItem('lastDailyReward');
+        const today = new Date().toDateString();
+        if (lastReward !== today) {
+          setShowDailyReward(true);
+        }
+      } catch (err) {
+        console.error('Auth check failed:', err);
         navigate('/auth');
-        return;
-      }
-      setUserEmail(session.user.email || '');
-      
-      // Check daily reward
-      const lastReward = localStorage.getItem('lastDailyReward');
-      const today = new Date().toDateString();
-      if (lastReward !== today) {
-        setShowDailyReward(true);
       }
     };
     checkAuth();
