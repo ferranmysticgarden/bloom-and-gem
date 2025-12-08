@@ -22,7 +22,15 @@ const BOOSTER_CONFIG = [
 
 export const BoosterBar = memo(({ boosters, activeBooster, onBoosterSelect }: BoosterBarProps) => {
   return (
-    <div className="flex justify-center gap-2 sm:gap-3 mt-2 sm:mt-4 px-2">
+    <div 
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '8px',
+        marginTop: '12px',
+        padding: '0 8px',
+      }}
+    >
       {BOOSTER_CONFIG.map(({ id, icon: Icon, label, color }) => {
         const count = boosters[id as keyof typeof boosters];
         const isActive = activeBooster === id;
@@ -34,24 +42,44 @@ export const BoosterBar = memo(({ boosters, activeBooster, onBoosterSelect }: Bo
             onClick={() => !isDisabled && onBoosterSelect(id)}
             disabled={isDisabled}
             className={cn(
-              'relative flex flex-col items-center gap-0.5 p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300',
-              'border border-border/50',
-              isActive && 'ring-2 ring-primary scale-110',
+              'relative flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all duration-300',
+              isActive && 'ring-2 ring-yellow-400 scale-110',
               isDisabled ? 'opacity-40 cursor-not-allowed' : 'hover:scale-105 cursor-pointer',
               `bg-gradient-to-br ${color}`
             )}
+            style={{
+              border: 'none',
+              minWidth: '52px',
+            }}
           >
-            <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-lg" />
-            <span className="text-[10px] sm:text-xs font-semibold text-white/90">{label}</span>
+            <Icon className="w-5 h-5 text-white drop-shadow-md" />
+            <span className="text-[10px] font-semibold text-white">{label}</span>
             
-            {/* Count badge */}
-            <div className="absolute -top-1 -right-1 bg-background text-foreground text-[10px] sm:text-xs font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border border-border">
+            {/* Count badge - DARK background, not white */}
+            <div 
+              style={{
+                position: 'absolute',
+                top: '-4px',
+                right: '-4px',
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '10px',
+                fontWeight: 'bold',
+                background: 'hsl(280, 30%, 20%)',
+                color: 'white',
+                border: '1px solid hsla(280, 30%, 35%, 0.5)',
+              }}
+            >
               {count}
             </div>
             
             {/* Active glow */}
             {isActive && (
-              <div className="absolute inset-0 rounded-lg sm:rounded-xl bg-white/20 animate-pulse" />
+              <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse" />
             )}
           </button>
         );

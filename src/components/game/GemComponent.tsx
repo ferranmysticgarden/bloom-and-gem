@@ -23,7 +23,7 @@ export const GemComponent = memo(({ gem, isSelected, onClick, cellSize }: GemCom
         isSelected && 'scale-110',
       )}
       style={{
-        fontSize: cellSize * 0.78,
+        fontSize: cellSize * 0.82,
       }}
     >
       <span 
