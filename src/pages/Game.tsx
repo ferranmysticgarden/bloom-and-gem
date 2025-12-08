@@ -200,38 +200,39 @@ const Game = () => {
     );
   }
 
-  // Playing screen
+  // Playing screen - FULL WIDTH, less overlay
   return (
     <div 
-      className="min-h-screen min-h-[100dvh] flex flex-col p-2 sm:p-4 relative overflow-hidden"
+      className="min-h-screen min-h-[100dvh] flex flex-col relative overflow-hidden"
       style={{
         backgroundImage: `url(${mysticForestBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
     >
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/20" />
+      {/* Overlay - LIGHTER to show more of background */}
+      <div 
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.1)',
+        }}
+      />
 
-      {/* Floating particles - reduced for mobile performance */}
-      {Array.from({ length: 10 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute rounded-full pointer-events-none z-0"
-          style={{
-            width: 3 + Math.random() * 4,
-            height: 3 + Math.random() * 4,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            background: `radial-gradient(circle, hsla(0, 0%, 100%, 0.9), hsla(45, 100%, 50%, 0.6))`,
-            boxShadow: '0 0 10px hsla(45, 100%, 50%, 0.5)',
-            animation: `float-particle ${6 + Math.random() * 6}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 8}s`,
-          }}
-        />
-      ))}
-
-      <div className="relative z-10 flex flex-col flex-1 max-w-lg mx-auto w-full">
+      {/* Main content - NO max-width limit, full screen */}
+      <div 
+        style={{
+          position: 'relative',
+          zIndex: 10,
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          padding: '12px',
+          maxWidth: '500px',
+          margin: '0 auto',
+          width: '100%',
+        }}
+      >
         <GameHeader
           level={gameState.level}
           score={gameState.score}
@@ -311,19 +312,6 @@ const Game = () => {
           </div>
         </div>
       )}
-
-      <style>{`
-        @keyframes float-particle {
-          0%, 100% {
-            transform: translateY(0) translateX(0);
-            opacity: 0.3;
-          }
-          50% {
-            transform: translateY(-30px) translateX(10px);
-            opacity: 1;
-          }
-        }
-      `}</style>
     </div>
   );
 };

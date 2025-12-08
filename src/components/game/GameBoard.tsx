@@ -38,13 +38,15 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
     onGemClick(pos);
   }, [selectedGem, onGemClick, onGemSwap]);
 
-  // Calculate cell size based on screen width - 8 columns
+  // Calculate cell size based on screen width - BIGGER cells
   const getCellSize = () => {
-    if (typeof window === 'undefined') return 44;
+    if (typeof window === 'undefined') return 48;
     const screenWidth = window.innerWidth;
-    const maxBoardWidth = Math.min(screenWidth - 32, 400);
-    const cellSize = Math.floor((maxBoardWidth - (cols - 1) * 4) / cols);
-    return Math.max(40, Math.min(50, cellSize));
+    // Allow bigger board width
+    const maxBoardWidth = Math.min(screenWidth - 24, 500);
+    const gap = 5;
+    const cellSize = Math.floor((maxBoardWidth - (cols - 1) * gap) / cols);
+    return Math.max(44, Math.min(58, cellSize));
   };
 
   const [cellSize, setCellSize] = useState(getCellSize);
@@ -56,14 +58,17 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
     return () => window.removeEventListener('resize', handleResize);
   }, [cols]);
 
+  const gap = 5;
+
   return (
-    <div className="flex justify-center items-center px-4">
-      {/* Board container - PURPLE background like reference */}
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      {/* Board container - PURPLE background matching reference */}
       <div 
-        className="rounded-3xl p-3"
         style={{
-          background: 'hsl(275, 30%, 22%)',
-          boxShadow: '0 8px 32px hsla(275, 40%, 10%, 0.8)',
+          background: 'hsl(280, 28%, 24%)',
+          boxShadow: '0 6px 24px hsla(280, 40%, 8%, 0.7)',
+          borderRadius: '24px',
+          padding: '14px',
         }}
       >
         {/* Grid 8x9 */}
@@ -72,19 +77,23 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
             display: 'grid',
             gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
             gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
-            gap: '6px',
+            gap: `${gap}px`,
           }}
         >
           {board.map((row, rowIndex) =>
             row.map((gem, colIndex) => (
               <div 
                 key={`${rowIndex}-${colIndex}`}
-                className="rounded-full flex items-center justify-center overflow-hidden"
                 style={{
                   width: `${cellSize}px`,
                   height: `${cellSize}px`,
-                  background: 'hsl(250, 35%, 20%)',
-                  boxShadow: 'inset 0 2px 6px hsla(250, 40%, 8%, 0.7)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                  background: 'hsl(240, 35%, 18%)',
+                  boxShadow: 'inset 0 2px 5px hsla(240, 40%, 6%, 0.8)',
                 }}
               >
                 {gem && (
