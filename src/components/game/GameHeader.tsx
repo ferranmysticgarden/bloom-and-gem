@@ -20,12 +20,13 @@ export const GameHeader = memo(({
 }: GameHeaderProps) => {
   return (
     <div 
-      className="w-full mx-auto overflow-hidden"
       style={{
-        background: 'hsl(280, 28%, 26%)',
+        width: '100%',
+        background: 'linear-gradient(180deg, hsl(280, 35%, 32%) 0%, hsl(280, 30%, 26%) 100%)',
         boxShadow: '0 4px 20px hsla(280, 40%, 10%, 0.6)',
-        borderRadius: '24px',
+        borderRadius: '20px',
         marginBottom: '12px',
+        overflow: 'hidden',
       }}
     >
       {/* Top row - Levels button LEFT, Level number RIGHT */}
@@ -48,7 +49,7 @@ export const GameHeader = memo(({
             gap: '8px',
             padding: '10px 20px',
             borderRadius: '9999px',
-            background: 'hsl(0, 0%, 5%)',
+            background: 'hsl(0, 0%, 8%)',
             color: 'white',
             fontSize: '15px',
             fontWeight: '500',
@@ -62,8 +63,8 @@ export const GameHeader = memo(({
         
         {/* Level X - RIGHT side, italic "Level", bold number */}
         <div 
-          className="font-cinzel"
           style={{
+            fontFamily: "'Cinzel', serif",
             color: '#FFD700',
             textShadow: '0 0 15px rgba(255, 215, 0, 0.5)',
             fontSize: '22px',
@@ -91,11 +92,11 @@ export const GameHeader = memo(({
             padding: '12px 8px',
             borderRadius: '14px',
             textAlign: 'center',
-            background: 'hsla(280, 25%, 20%, 0.85)',
+            background: 'hsla(280, 25%, 22%, 0.9)',
           }}
         >
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', marginBottom: '4px' }}>Moves</p>
-          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '28px', lineHeight: '1' }}>{moves}</p>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', marginBottom: '4px', margin: '0 0 4px 0' }}>Moves</p>
+          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '26px', lineHeight: '1', margin: 0 }}>{moves}</p>
         </div>
         
         {/* Score */}
@@ -105,11 +106,11 @@ export const GameHeader = memo(({
             padding: '12px 8px',
             borderRadius: '14px',
             textAlign: 'center',
-            background: 'hsla(280, 25%, 20%, 0.85)',
+            background: 'hsla(280, 25%, 22%, 0.9)',
           }}
         >
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', marginBottom: '4px' }}>Score</p>
-          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '28px', lineHeight: '1' }}>{score}</p>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', marginBottom: '4px', margin: '0 0 4px 0' }}>Score</p>
+          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '26px', lineHeight: '1', margin: 0 }}>{score}</p>
         </div>
         
         {/* Objective */}
@@ -119,22 +120,22 @@ export const GameHeader = memo(({
             padding: '12px 8px',
             borderRadius: '14px',
             textAlign: 'center',
-            background: 'hsla(280, 25%, 20%, 0.85)',
+            background: 'hsla(280, 25%, 22%, 0.9)',
           }}
         >
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', marginBottom: '4px' }}>Objective</p>
-          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '20px', lineHeight: '1' }}>{score} / {targetScore}</p>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', marginBottom: '4px', margin: '0 0 4px 0' }}>Objective</p>
+          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '18px', lineHeight: '1', margin: 0 }}>{score} / {targetScore}</p>
         </div>
       </div>
       
       {/* Collect points text */}
       <div style={{ textAlign: 'center', paddingBottom: '14px' }}>
-        <p style={{ color: 'white', fontSize: '15px' }}>
+        <p style={{ color: 'white', fontSize: '15px', margin: 0 }}>
           Collect <span style={{ fontWeight: 'bold' }}>{targetScore}</span> points
         </p>
       </div>
       
-      {/* Combo indicator - outside visible area when not active */}
+      {/* Combo indicator */}
       {combo > 1 && (
         <div 
           style={{

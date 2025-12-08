@@ -23,7 +23,7 @@ export const LEVELS: LevelConfig[] = [
   })),
 ];
 
-// 6 tipos de flores
+// 6 tipos de flores - ICONOS IDÉNTICOS A LA IMAGEN DE REFERENCIA
 export const GEM_TYPES = ['leaf', 'cherry', 'tulip', 'sunflower', 'hibiscus', 'daisy'] as const;
 
 export const GEM_EMOJIS: Record<string, string> = {

@@ -122,7 +122,6 @@ const Game = () => {
   }, [navigate]);
 
   const handlePurchase = useCallback((itemId: string) => {
-    // Handle purchase logic here
     console.log('Purchasing:', itemId);
   }, []);
 
@@ -134,14 +133,21 @@ const Game = () => {
   if (loading) {
     return (
       <div 
-        className="min-h-screen min-h-[100dvh] flex items-center justify-center"
         style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           backgroundImage: `url(${mysticForestBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       >
-        <div className="text-white text-xl font-cinzel animate-pulse">Cargando...</div>
+        <div style={{ color: 'white', fontSize: '20px', fontFamily: "'Cinzel', serif" }}>Cargando...</div>
       </div>
     );
   }
@@ -200,26 +206,39 @@ const Game = () => {
     );
   }
 
-  // Playing screen - FULL WIDTH, less overlay
+  // Playing screen - PANTALLA COMPLETA
   return (
     <div 
-      className="min-h-screen min-h-[100dvh] flex flex-col relative overflow-hidden"
       style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
         backgroundImage: `url(${mysticForestBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        overflow: 'hidden',
       }}
     >
-      {/* Overlay - LIGHTER to show more of background */}
+      {/* Overlay - más claro para ver el fondo */}
       <div 
         style={{
           position: 'absolute',
-          inset: 0,
-          background: 'rgba(0, 0, 0, 0.1)',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(180deg, rgba(60, 20, 80, 0.3) 0%, rgba(20, 40, 60, 0.4) 100%)',
+          zIndex: 1,
         }}
       />
 
-      {/* Main content - NO max-width limit, full screen */}
+      {/* Contenido principal - llena toda la pantalla */}
       <div 
         style={{
           position: 'relative',
@@ -228,9 +247,11 @@ const Game = () => {
           flexDirection: 'column',
           flex: 1,
           padding: '12px',
-          maxWidth: '500px',
+          maxWidth: '420px',
           margin: '0 auto',
           width: '100%',
+          height: '100%',
+          boxSizing: 'border-box',
         }}
       >
         <GameHeader
@@ -282,29 +303,56 @@ const Game = () => {
 
       {/* Pause modal */}
       {screen === 'paused' && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.7)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
+        >
           <div 
-            className="p-8 text-center rounded-2xl"
             style={{
+              padding: '32px',
+              textAlign: 'center',
+              borderRadius: '16px',
               background: 'linear-gradient(135deg, rgba(60, 20, 80, 0.95) 0%, rgba(40, 15, 60, 0.95) 100%)',
               border: '2px solid rgba(255, 215, 0, 0.3)',
             }}
           >
-            <h2 className="font-cinzel text-2xl mb-6 text-white">Pausado</h2>
-            <div className="flex flex-col gap-3">
+            <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '24px', marginBottom: '24px', color: 'white' }}>Pausado</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <button
                 onClick={() => setScreen('playing')}
-                className="px-6 py-3 rounded-full font-semibold"
                 style={{
+                  padding: '12px 24px',
+                  borderRadius: '9999px',
+                  fontWeight: '600',
                   background: 'linear-gradient(135deg, #FFA500 0%, #FF8C00 100%)',
                   color: '#1a1a2e',
+                  border: 'none',
+                  cursor: 'pointer',
                 }}
               >
                 Continuar
               </button>
               <button
                 onClick={handleMainMenu}
-                className="px-6 py-3 rounded-full border border-white/30 hover:bg-white/10 text-white"
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  background: 'transparent',
+                  color: 'white',
+                  cursor: 'pointer',
+                }}
               >
                 Menú Principal
               </button>
