@@ -106,21 +106,23 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
       
       {/* Board container with golden border */}
       <div 
-        className="p-2 rounded-2xl relative w-full"
+        className="rounded-2xl relative"
         style={{
-          background: 'linear-gradient(135deg, hsl(45 90% 50%) 0%, hsl(35 90% 50%) 50%, hsl(25 90% 50%) 100%)',
+          padding: '4px',
+          background: 'linear-gradient(135deg, hsl(45, 90%, 50%) 0%, hsl(35, 90%, 50%) 50%, hsl(25, 90%, 50%) 100%)',
           boxShadow: '0 0 30px hsla(35, 90%, 50%, 0.5), 0 0 60px hsla(35, 90%, 50%, 0.3)',
+          width: 'fit-content',
+          margin: '0 auto',
         }}
       >
         {/* Inner board */}
         <div 
-          className="grid p-2 rounded-xl relative mx-auto"
+          className="grid p-2 rounded-xl"
           style={{ 
             gridTemplateColumns: `repeat(${size}, ${finalCellSize}px)`,
             gridTemplateRows: `repeat(${size}, ${finalCellSize}px)`,
             gap: '4px',
-            background: 'linear-gradient(135deg, hsl(270 60% 15%) 0%, hsl(280 50% 20%) 100%)',
-            width: 'fit-content',
+            background: 'linear-gradient(135deg, hsl(270, 60%, 15%) 0%, hsl(280, 50%, 20%) 100%)',
           }}
         >
           {board.map((row, rowIndex) =>
