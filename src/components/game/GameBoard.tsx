@@ -9,34 +9,8 @@ interface GameBoardProps {
   onGemSwap: (pos1: Position, pos2: Position) => void;
 }
 
-// Hook para obtener dimensiones de la ventana de forma reactiva
-const useWindowSize = () => {
-  const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 375,
-    height: typeof window !== 'undefined' ? window.innerHeight : 667,
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener('resize', handleResize);
-    // Llamar una vez al montar
-    handleResize();
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return windowSize;
-};
-
 export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: GameBoardProps) => {
   const size = board?.length || 0;
-  const { width: windowWidth, height: windowHeight } = useWindowSize();
   
   // Return early if no board
   if (size === 0 || !board[0]) {
@@ -46,18 +20,6 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
       </div>
     );
   }
-  
-  // Calcular el tamaño de celda basado en el espacio disponible
-  // Dejamos margen para header, booster bar y padding
-  const availableWidth = windowWidth - 32; // 16px padding cada lado
-  const availableHeight = windowHeight - 280; // Espacio para header y boosters
-  
-  // Usar el menor entre ancho y alto para que el tablero sea cuadrado
-  const maxBoardSize = Math.min(availableWidth, availableHeight);
-  const cellSize = Math.floor((maxBoardSize - (size * 4)) / size); // 4px de gap total por celda
-  
-  // Limitar tamaño mínimo y máximo
-  const finalCellSize = Math.max(36, Math.min(60, cellSize));
 
   const handleGemClick = useCallback((row: number, col: number) => {
     const pos = { row, col };
@@ -75,60 +37,53 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
     onGemClick(pos);
   }, [selectedGem, onGemClick, onGemSwap]);
 
-  // Corner decorations
-  const decorations = [
-    { emoji: '🍄', position: 'top-left', style: { top: '-16px', left: '-16px' } },
-    { emoji: '✨', position: 'top-right', style: { top: '-12px', right: '-12px' } },
-    { emoji: '💎', position: 'bottom-left', style: { bottom: '-16px', left: '-16px' } },
-    { emoji: '🍄', position: 'bottom-right', style: { bottom: '-12px', right: '-12px' } },
-  ];
+  // Calculate cell size based on screen width
+  const getCellSize = () => {
+    if (typeof window === 'undefined') return 48;
+    const screenWidth = window.innerWidth;
+    const maxBoardWidth = Math.min(screenWidth - 32, 400);
+    const cellSize = Math.floor((maxBoardWidth - (size - 1) * 4 - 16) / size);
+    return Math.max(36, Math.min(56, cellSize));
+  };
 
-  const boardWidth = (finalCellSize * size) + (size - 1) * 4 + 16; // cells + gaps + padding
+  const [cellSize, setCellSize] = useState(getCellSize);
+
+  useEffect(() => {
+    const handleResize = () => setCellSize(getCellSize());
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, [size]);
 
   return (
-    <div 
-      className="relative my-2 w-full flex items-center justify-center"
-    >
-      {/* Corner decorations */}
-      {decorations.map((dec, i) => (
-        <div
-          key={i}
-          className="absolute text-xl z-20 animate-pulse"
-          style={dec.style}
-        >
-          {dec.emoji}
-        </div>
-      ))}
-      
+    <div className="flex justify-center items-center my-4 px-2">
       {/* Board container with golden border */}
       <div 
-        className="rounded-2xl relative"
+        className="rounded-2xl p-1"
         style={{
-          padding: '4px',
           background: 'linear-gradient(135deg, hsl(45, 90%, 50%) 0%, hsl(35, 90%, 50%) 50%, hsl(25, 90%, 50%) 100%)',
           boxShadow: '0 0 30px hsla(35, 90%, 50%, 0.5), 0 0 60px hsla(35, 90%, 50%, 0.3)',
-          width: 'fit-content',
-          margin: '0 auto',
         }}
       >
-        {/* Inner board */}
+        {/* Inner board with grid */}
         <div 
-          className="grid p-2 rounded-xl"
-          style={{ 
-            gridTemplateColumns: `repeat(${size}, ${finalCellSize}px)`,
-            gridTemplateRows: `repeat(${size}, ${finalCellSize}px)`,
-            gap: '4px',
+          className="rounded-xl p-2"
+          style={{
             background: 'linear-gradient(135deg, hsl(270, 60%, 15%) 0%, hsl(280, 50%, 20%) 100%)',
+            display: 'grid',
+            gridTemplateColumns: `repeat(${size}, ${cellSize}px)`,
+            gridTemplateRows: `repeat(${size}, ${cellSize}px)`,
+            gap: '4px',
           }}
         >
           {board.map((row, rowIndex) =>
             row.map((gem, colIndex) => (
               <div 
                 key={`${rowIndex}-${colIndex}`}
-                className="relative rounded-lg"
+                className="rounded-lg flex items-center justify-center"
                 style={{
-                  width: `${finalCellSize}px`,
-                  height: `${finalCellSize}px`,
+                  width: `${cellSize}px`,
+                  height: `${cellSize}px`,
                   background: 'hsla(280, 50%, 25%, 0.6)',
                   border: '1px solid hsla(280, 50%, 40%, 0.3)',
                 }}
@@ -138,7 +93,7 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
                     gem={gem}
                     isSelected={selectedGem?.row === rowIndex && selectedGem?.col === colIndex}
                     onClick={() => handleGemClick(rowIndex, colIndex)}
-                    cellSize={finalCellSize}
+                    cellSize={cellSize}
                   />
                 )}
               </div>
