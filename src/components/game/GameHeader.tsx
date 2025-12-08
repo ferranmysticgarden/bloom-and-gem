@@ -20,20 +20,21 @@ export const GameHeader = memo(({
 }: GameHeaderProps) => {
   return (
     <div 
-      className="w-full max-w-md mx-auto rounded-3xl mb-6 overflow-hidden"
+      className="w-full max-w-md mx-auto rounded-3xl mb-4 overflow-hidden"
       style={{
         background: 'hsl(280, 30%, 22%)',
         boxShadow: '0 8px 32px hsla(280, 50%, 15%, 0.6)',
       }}
     >
       {/* Top row - Levels button and Level number */}
-      <div className="flex justify-between items-center px-4 py-4">
+      <div className="flex flex-row justify-between items-center px-4 py-3">
         <button
           onClick={onExit}
-          className="px-5 py-2.5 rounded-full font-medium flex items-center gap-2 transition-all hover:scale-105"
+          className="px-4 py-2 rounded-full font-medium flex flex-row items-center gap-2 transition-all hover:scale-105"
           style={{
             background: 'hsl(0, 0%, 8%)',
             color: 'white',
+            fontSize: '14px',
           }}
         >
           <ArrowLeft className="w-4 h-4" />
@@ -41,72 +42,91 @@ export const GameHeader = memo(({
         </button>
         
         <div 
-          className="font-cinzel text-2xl italic"
+          className="font-cinzel text-xl"
           style={{
             color: '#FFD700',
             textShadow: '0 0 12px rgba(255, 215, 0, 0.6)',
           }}
         >
-          Level <span className="font-bold">{level}</span>
+          LEVEL <span className="font-bold">{level}</span>
         </div>
       </div>
       
-      {/* Stats row - 3 boxes */}
-      <div className="flex gap-3 px-4 pb-4">
+      {/* Stats row - 3 boxes HORIZONTAL */}
+      <div 
+        className="px-4 pb-3"
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: '8px',
+        }}
+      >
         {/* Moves */}
         <div 
-          className="flex-1 py-4 rounded-2xl text-center"
           style={{
+            flex: 1,
+            padding: '12px 8px',
+            borderRadius: '12px',
+            textAlign: 'center',
             background: 'hsla(280, 25%, 18%, 0.8)',
             border: '1px solid hsla(280, 30%, 35%, 0.4)',
           }}
         >
-          <p className="text-white/70 text-xs uppercase tracking-wider mb-1">Moves</p>
-          <p className="text-white font-bold text-3xl">{moves}</p>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Moves</p>
+          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '24px' }}>{moves}</p>
         </div>
         
         {/* Score */}
         <div 
-          className="flex-1 py-4 rounded-2xl text-center"
           style={{
+            flex: 1,
+            padding: '12px 8px',
+            borderRadius: '12px',
+            textAlign: 'center',
             background: 'hsla(280, 25%, 18%, 0.8)',
             border: '1px solid hsla(280, 30%, 35%, 0.4)',
           }}
         >
-          <p className="text-white/70 text-xs uppercase tracking-wider mb-1">Score</p>
-          <p className="text-white font-bold text-3xl">{score}</p>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Score</p>
+          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '24px' }}>{score}</p>
         </div>
         
         {/* Objective */}
         <div 
-          className="flex-1 py-4 rounded-2xl text-center"
           style={{
+            flex: 1,
+            padding: '12px 8px',
+            borderRadius: '12px',
+            textAlign: 'center',
             background: 'hsla(280, 25%, 18%, 0.8)',
             border: '1px solid hsla(280, 30%, 35%, 0.4)',
           }}
         >
-          <p className="text-white/70 text-xs uppercase tracking-wider mb-1">Objective</p>
-          <p className="text-white font-bold text-xl">{score} <span className="text-white/50">/</span> {targetScore}</p>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Objective</p>
+          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>{score} / {targetScore}</p>
         </div>
       </div>
       
       {/* Collect points text */}
-      <div className="text-center pb-5">
-        <p className="text-white text-base">
-          Collect <span className="font-bold">{targetScore}</span> points
+      <div style={{ textAlign: 'center', paddingBottom: '16px' }}>
+        <p style={{ color: 'white', fontSize: '14px' }}>
+          Collect <span style={{ fontWeight: 'bold' }}>{targetScore}</span> points
         </p>
       </div>
       
       {/* Combo indicator */}
       {combo > 1 && (
         <div 
-          className="text-center py-2 mx-4 mb-4 rounded-full animate-pulse"
           style={{
+            textAlign: 'center',
+            padding: '8px',
+            margin: '0 16px 16px 16px',
+            borderRadius: '9999px',
             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%)',
             border: '1px solid rgba(255, 215, 0, 0.5)',
           }}
         >
-          <span className="text-yellow-400 font-bold">🔥 x{combo} Combo!</span>
+          <span style={{ color: '#FACC15', fontWeight: 'bold' }}>🔥 x{combo} Combo!</span>
         </div>
       )}
     </div>
