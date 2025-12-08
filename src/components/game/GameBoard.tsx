@@ -87,11 +87,7 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
 
   return (
     <div 
-      className="relative mx-auto my-2 flex items-center justify-center" 
-      style={{ 
-        width: '100%',
-        maxWidth: `${boardWidth + 16}px`,
-      }}
+      className="relative my-2 w-full flex items-center justify-center"
     >
       {/* Corner decorations */}
       {decorations.map((dec, i) => (
