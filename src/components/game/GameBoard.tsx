@@ -62,17 +62,17 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
       <div 
         className="rounded-3xl p-3"
         style={{
-          background: 'hsl(270, 25%, 18%)',
-          boxShadow: '0 8px 32px hsla(270, 40%, 10%, 0.8)',
+          background: 'hsl(275, 30%, 22%)',
+          boxShadow: '0 8px 32px hsla(275, 40%, 10%, 0.8)',
         }}
       >
-        {/* Grid 8x8 */}
+        {/* Grid 8x9 */}
         <div 
           style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
             gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
-            gap: '4px',
+            gap: '6px',
           }}
         >
           {board.map((row, rowIndex) =>
@@ -83,8 +83,8 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
                 style={{
                   width: `${cellSize}px`,
                   height: `${cellSize}px`,
-                  background: 'hsl(260, 30%, 22%)',
-                  boxShadow: 'inset 0 3px 8px hsla(260, 35%, 10%, 0.6)',
+                  background: 'hsl(250, 35%, 20%)',
+                  boxShadow: 'inset 0 2px 6px hsla(250, 40%, 8%, 0.7)',
                 }}
               >
                 {gem && (

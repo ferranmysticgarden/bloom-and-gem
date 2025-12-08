@@ -22,8 +22,8 @@ export const GameHeader = memo(({
     <div 
       className="w-full max-w-md mx-auto rounded-3xl mb-4 overflow-hidden"
       style={{
-        background: 'hsl(280, 30%, 22%)',
-        boxShadow: '0 8px 32px hsla(280, 50%, 15%, 0.6)',
+        background: 'hsl(280, 32%, 24%)',
+        boxShadow: '0 8px 32px hsla(280, 50%, 12%, 0.7)',
       }}
     >
       {/* Top row - Levels button and Level number */}
@@ -65,45 +65,45 @@ export const GameHeader = memo(({
         <div 
           style={{
             flex: 1,
-            padding: '12px 8px',
-            borderRadius: '12px',
+            padding: '14px 8px',
+            borderRadius: '16px',
             textAlign: 'center',
-            background: 'hsla(280, 25%, 18%, 0.8)',
-            border: '1px solid hsla(280, 30%, 35%, 0.4)',
+            background: 'hsla(275, 28%, 18%, 0.9)',
+            border: '1px solid hsla(275, 25%, 30%, 0.3)',
           }}
         >
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Moves</p>
-          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '24px' }}>{moves}</p>
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '12px', textTransform: 'capitalize', letterSpacing: '0.5px', marginBottom: '6px' }}>Moves</p>
+          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '26px' }}>{moves}</p>
         </div>
         
         {/* Score */}
         <div 
           style={{
             flex: 1,
-            padding: '12px 8px',
-            borderRadius: '12px',
+            padding: '14px 8px',
+            borderRadius: '16px',
             textAlign: 'center',
-            background: 'hsla(280, 25%, 18%, 0.8)',
-            border: '1px solid hsla(280, 30%, 35%, 0.4)',
+            background: 'hsla(275, 28%, 18%, 0.9)',
+            border: '1px solid hsla(275, 25%, 30%, 0.3)',
           }}
         >
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Score</p>
-          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '24px' }}>{score}</p>
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '12px', textTransform: 'capitalize', letterSpacing: '0.5px', marginBottom: '6px' }}>Score</p>
+          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '26px' }}>{score}</p>
         </div>
         
         {/* Objective */}
         <div 
           style={{
             flex: 1,
-            padding: '12px 8px',
-            borderRadius: '12px',
+            padding: '14px 8px',
+            borderRadius: '16px',
             textAlign: 'center',
-            background: 'hsla(280, 25%, 18%, 0.8)',
-            border: '1px solid hsla(280, 30%, 35%, 0.4)',
+            background: 'hsla(275, 28%, 18%, 0.9)',
+            border: '1px solid hsla(275, 25%, 30%, 0.3)',
           }}
         >
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Objective</p>
-          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>{score} / {targetScore}</p>
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '12px', textTransform: 'capitalize', letterSpacing: '0.5px', marginBottom: '6px' }}>Objective</p>
+          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '20px' }}>{score} / {targetScore}</p>
         </div>
       </div>
       
