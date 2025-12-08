@@ -58,21 +58,21 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
 
   return (
     <div className="flex justify-center items-center px-2">
-      {/* Board container - dark purple rounded */}
+      {/* Board container - dark navy/black background like reference */}
       <div 
-        className="rounded-2xl p-3"
+        className="rounded-2xl p-2"
         style={{
-          background: 'linear-gradient(135deg, hsl(250, 35%, 18%) 0%, hsl(260, 30%, 15%) 100%)',
-          boxShadow: '0 8px 32px hsla(260, 50%, 10%, 0.8)',
+          background: 'hsl(220, 40%, 8%)',
+          boxShadow: '0 8px 32px hsla(220, 50%, 5%, 0.9)',
         }}
       >
-        {/* Grid */}
+        {/* Grid 8x8 */}
         <div 
           style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
             gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
-            gap: '3px',
+            gap: '2px',
           }}
         >
           {board.map((row, rowIndex) =>
@@ -83,8 +83,8 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
                 style={{
                   width: `${cellSize}px`,
                   height: `${cellSize}px`,
-                  background: 'hsl(250, 30%, 22%)',
-                  boxShadow: 'inset 0 2px 4px hsla(250, 30%, 10%, 0.5)',
+                  background: 'hsl(220, 35%, 18%)',
+                  boxShadow: 'inset 0 2px 6px hsla(220, 40%, 8%, 0.7)',
                 }}
               >
                 {gem && (
