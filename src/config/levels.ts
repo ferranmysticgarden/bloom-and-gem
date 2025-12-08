@@ -1,7 +1,7 @@
 import { LevelConfig } from '@/types/game';
 
 export const LEVELS: LevelConfig[] = [
-  { level: 1, gridSize: 6, moves: 20, targetScore: 500, gemTypes: 4, specialChance: 0 },
+  { level: 1, gridSize: 8, moves: 20, targetScore: 500, gemTypes: 4, specialChance: 0 },
   { level: 2, gridSize: 6, moves: 20, targetScore: 800, gemTypes: 4, specialChance: 0.02 },
   { level: 3, gridSize: 6, moves: 18, targetScore: 1000, gemTypes: 5, specialChance: 0.03 },
   { level: 4, gridSize: 7, moves: 20, targetScore: 1500, gemTypes: 5, specialChance: 0.04 },
