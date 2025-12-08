@@ -110,10 +110,12 @@ const Auth = () => {
         
         .auth-page {
           min-height: 100vh;
+          min-height: 100dvh;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 20px;
+          padding: 16px;
           position: relative;
           overflow: hidden;
           background-image: url(${mysticForestBg});
@@ -134,27 +136,19 @@ const Auth = () => {
           animation: float-glow 3s ease-in-out infinite;
         }
         
-        .auth-particle {
-          position: absolute;
-          border-radius: 50%;
-          pointer-events: none;
-          z-index: 10;
-          background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,215,0,0.6));
-          box-shadow: 0 0 10px rgba(255,215,0,0.5);
-        }
-        
         .auth-card {
           position: relative;
           z-index: 20;
           width: 100%;
-          max-width: 420px;
-          padding: 40px 30px;
+          max-width: 380px;
+          padding: 32px 24px;
           border-radius: 20px;
           background: rgba(255, 255, 255, 0.1);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
           border: 2px solid rgba(255, 215, 0, 0.3);
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          margin: auto;
         }
         
         .auth-title {
@@ -385,21 +379,6 @@ const Auth = () => {
           </div>
         ))}
 
-        {/* Floating particles */}
-        {particles.map((particle) => (
-          <div
-            key={particle.id}
-            className="auth-particle"
-            style={{
-              left: `${particle.left}%`,
-              bottom: '-10px',
-              width: `${particle.size}px`,
-              height: `${particle.size}px`,
-              animation: `float-up ${particle.duration}s linear infinite`,
-              animationDelay: `${particle.delay}s`,
-            }}
-          />
-        ))}
 
         {/* Card */}
         <div className="auth-card">
