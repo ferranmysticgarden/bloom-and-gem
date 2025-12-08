@@ -16,8 +16,8 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
   // Return early if no board
   if (rows === 0 || cols === 0) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-white/60">Cargando tablero...</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px' }}>
+        <div style={{ color: 'rgba(255,255,255,0.6)' }}>Cargando tablero...</div>
       </div>
     );
   }
@@ -38,15 +38,14 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
     onGemClick(pos);
   }, [selectedGem, onGemClick, onGemSwap]);
 
-  // Calculate cell size based on screen width - BIGGER cells
+  // Calculate cell size based on screen width
   const getCellSize = () => {
-    if (typeof window === 'undefined') return 48;
+    if (typeof window === 'undefined') return 42;
     const screenWidth = window.innerWidth;
-    // Allow bigger board width
-    const maxBoardWidth = Math.min(screenWidth - 24, 500);
-    const gap = 5;
+    const maxBoardWidth = Math.min(screenWidth - 32, 420);
+    const gap = 4;
     const cellSize = Math.floor((maxBoardWidth - (cols - 1) * gap) / cols);
-    return Math.max(44, Math.min(58, cellSize));
+    return Math.max(38, Math.min(52, cellSize));
   };
 
   const [cellSize, setCellSize] = useState(getCellSize);
@@ -58,17 +57,17 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
     return () => window.removeEventListener('resize', handleResize);
   }, [cols]);
 
-  const gap = 5;
+  const gap = 4;
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      {/* Board container - PURPLE background matching reference */}
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+      {/* Board container - AZULADO como en la referencia */}
       <div 
         style={{
-          background: 'hsl(280, 28%, 24%)',
-          boxShadow: '0 6px 24px hsla(280, 40%, 8%, 0.7)',
-          borderRadius: '24px',
-          padding: '14px',
+          background: 'linear-gradient(180deg, hsl(250, 30%, 28%) 0%, hsl(260, 28%, 22%) 100%)',
+          boxShadow: '0 8px 32px hsla(260, 40%, 10%, 0.8)',
+          borderRadius: '20px',
+          padding: '12px',
         }}
       >
         {/* Grid 8x9 */}
@@ -92,8 +91,8 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
                   alignItems: 'center',
                   justifyContent: 'center',
                   overflow: 'hidden',
-                  background: 'hsl(240, 35%, 18%)',
-                  boxShadow: 'inset 0 2px 5px hsla(240, 40%, 6%, 0.8)',
+                  background: 'hsl(230, 35%, 22%)',
+                  boxShadow: 'inset 0 2px 6px hsla(230, 40%, 8%, 0.9)',
                 }}
               >
                 {gem && (
