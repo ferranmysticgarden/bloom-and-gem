@@ -1,37 +1,38 @@
 import { LevelConfig } from '@/types/game';
 
+// TODOS los niveles son 8x8
 export const LEVELS: LevelConfig[] = [
-  { level: 1, gridSize: 6, moves: 20, targetScore: 500, gemTypes: 4, specialChance: 0 },
-  { level: 2, gridSize: 6, moves: 20, targetScore: 800, gemTypes: 4, specialChance: 0.02 },
-  { level: 3, gridSize: 6, moves: 18, targetScore: 1000, gemTypes: 5, specialChance: 0.03 },
-  { level: 4, gridSize: 7, moves: 20, targetScore: 1500, gemTypes: 5, specialChance: 0.04 },
-  { level: 5, gridSize: 7, moves: 18, targetScore: 2000, gemTypes: 5, specialChance: 0.05 },
-  { level: 6, gridSize: 7, moves: 16, targetScore: 2500, gemTypes: 6, specialChance: 0.05 },
-  { level: 7, gridSize: 8, moves: 20, targetScore: 3000, gemTypes: 6, specialChance: 0.06 },
+  { level: 1, gridSize: 8, moves: 25, targetScore: 500, gemTypes: 6, specialChance: 0 },
+  { level: 2, gridSize: 8, moves: 24, targetScore: 800, gemTypes: 6, specialChance: 0.02 },
+  { level: 3, gridSize: 8, moves: 23, targetScore: 1000, gemTypes: 6, specialChance: 0.03 },
+  { level: 4, gridSize: 8, moves: 22, targetScore: 1500, gemTypes: 6, specialChance: 0.04 },
+  { level: 5, gridSize: 8, moves: 21, targetScore: 2000, gemTypes: 6, specialChance: 0.05 },
+  { level: 6, gridSize: 8, moves: 20, targetScore: 2500, gemTypes: 6, specialChance: 0.05 },
+  { level: 7, gridSize: 8, moves: 19, targetScore: 3000, gemTypes: 6, specialChance: 0.06 },
   { level: 8, gridSize: 8, moves: 18, targetScore: 3500, gemTypes: 6, specialChance: 0.07 },
-  { level: 9, gridSize: 8, moves: 16, targetScore: 4000, gemTypes: 7, specialChance: 0.08 },
-  { level: 10, gridSize: 8, moves: 15, targetScore: 5000, gemTypes: 7, specialChance: 0.1 },
-  // More levels can be added
+  { level: 9, gridSize: 8, moves: 17, targetScore: 4000, gemTypes: 6, specialChance: 0.08 },
+  { level: 10, gridSize: 8, moves: 16, targetScore: 5000, gemTypes: 6, specialChance: 0.1 },
+  // Más niveles - todos 8x8
   ...Array.from({ length: 90 }, (_, i) => ({
     level: i + 11,
-    gridSize: Math.min(8, 6 + Math.floor((i + 11) / 20)),
-    moves: Math.max(10, 20 - Math.floor((i + 11) / 10)),
+    gridSize: 8,
+    moves: Math.max(12, 16 - Math.floor((i) / 15)),
     targetScore: 5000 + (i + 1) * 500,
-    gemTypes: 7,
+    gemTypes: 6,
     specialChance: Math.min(0.15, 0.1 + (i + 1) * 0.005),
   })),
 ];
 
-export const GEM_TYPES = ['red', 'blue', 'green', 'yellow', 'purple', 'pink', 'cyan'] as const;
+// 6 tipos de flores
+export const GEM_TYPES = ['leaf', 'cherry', 'tulip', 'sunflower', 'hibiscus', 'daisy'] as const;
 
 export const GEM_EMOJIS: Record<string, string> = {
-  red: '🍄',
-  blue: '💎',
-  green: '🧚',
-  yellow: '✨',
-  purple: '🦋',
-  pink: '🌙',
-  cyan: '🔮',
+  leaf: '🌿',
+  cherry: '🌸',
+  tulip: '🌷',
+  sunflower: '🌻',
+  hibiscus: '🌺',
+  daisy: '🌼',
 };
 
 export const SPECIAL_EMOJIS: Record<string, string> = {
