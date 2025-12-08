@@ -10,10 +10,11 @@ interface GameBoardProps {
 }
 
 export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: GameBoardProps) => {
-  const size = board?.length || 0;
+  const rows = board?.length || 0;
+  const cols = board?.[0]?.length || 0;
   
   // Return early if no board
-  if (size === 0 || !board[0]) {
+  if (rows === 0 || cols === 0) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-white/60">Cargando tablero...</div>
@@ -37,13 +38,13 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
     onGemClick(pos);
   }, [selectedGem, onGemClick, onGemSwap]);
 
-  // Calculate cell size based on screen width
+  // Calculate cell size based on screen width - 8 columns for reference design
   const getCellSize = () => {
-    if (typeof window === 'undefined') return 48;
+    if (typeof window === 'undefined') return 44;
     const screenWidth = window.innerWidth;
-    const maxBoardWidth = Math.min(screenWidth - 32, 400);
-    const cellSize = Math.floor((maxBoardWidth - (size - 1) * 4 - 16) / size);
-    return Math.max(36, Math.min(56, cellSize));
+    const maxBoardWidth = Math.min(screenWidth - 40, 380);
+    const cellSize = Math.floor((maxBoardWidth - (cols - 1) * 2) / cols);
+    return Math.max(38, Math.min(48, cellSize));
   };
 
   const [cellSize, setCellSize] = useState(getCellSize);
@@ -53,39 +54,37 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
     window.addEventListener('resize', handleResize);
     handleResize();
     return () => window.removeEventListener('resize', handleResize);
-  }, [size]);
+  }, [cols]);
 
   return (
-    <div className="flex justify-center items-center my-4 px-2">
-      {/* Board container with golden border */}
+    <div className="flex justify-center items-center px-2">
+      {/* Board container - dark purple rounded */}
       <div 
-        className="rounded-2xl p-1"
+        className="rounded-2xl p-3"
         style={{
-          background: 'linear-gradient(135deg, hsl(45, 90%, 50%) 0%, hsl(35, 90%, 50%) 50%, hsl(25, 90%, 50%) 100%)',
-          boxShadow: '0 0 30px hsla(35, 90%, 50%, 0.5), 0 0 60px hsla(35, 90%, 50%, 0.3)',
+          background: 'linear-gradient(135deg, hsl(250, 35%, 18%) 0%, hsl(260, 30%, 15%) 100%)',
+          boxShadow: '0 8px 32px hsla(260, 50%, 10%, 0.8)',
         }}
       >
-        {/* Inner board with grid */}
+        {/* Grid */}
         <div 
-          className="rounded-xl p-2"
           style={{
-            background: 'linear-gradient(135deg, hsl(270, 60%, 15%) 0%, hsl(280, 50%, 20%) 100%)',
             display: 'grid',
-            gridTemplateColumns: `repeat(${size}, ${cellSize}px)`,
-            gridTemplateRows: `repeat(${size}, ${cellSize}px)`,
-            gap: '4px',
+            gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
+            gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
+            gap: '3px',
           }}
         >
           {board.map((row, rowIndex) =>
             row.map((gem, colIndex) => (
               <div 
                 key={`${rowIndex}-${colIndex}`}
-                className="rounded-lg flex items-center justify-center"
+                className="rounded-full flex items-center justify-center overflow-hidden"
                 style={{
                   width: `${cellSize}px`,
                   height: `${cellSize}px`,
-                  background: 'hsla(280, 50%, 25%, 0.6)',
-                  border: '1px solid hsla(280, 50%, 40%, 0.3)',
+                  background: 'hsl(250, 30%, 22%)',
+                  boxShadow: 'inset 0 2px 4px hsla(250, 30%, 10%, 0.5)',
                 }}
               >
                 {gem && (

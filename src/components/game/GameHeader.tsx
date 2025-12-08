@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Trophy, Zap, Target, X } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 interface GameHeaderProps {
   level: number;
@@ -18,103 +18,90 @@ export const GameHeader = memo(({
   combo,
   onExit,
 }: GameHeaderProps) => {
-  const progress = Math.min((score / targetScore) * 100, 100);
-  
   return (
     <div 
-      className="w-full max-w-md mx-auto p-3 rounded-xl mb-3"
+      className="w-full max-w-md mx-auto rounded-2xl mb-4 overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, hsla(280, 50%, 20%, 0.95) 0%, hsla(270, 50%, 15%, 0.95) 100%)',
-        border: '2px solid hsla(280, 50%, 50%, 0.3)',
-        boxShadow: '0 4px 20px hsla(280, 50%, 40%, 0.3)',
+        background: 'linear-gradient(135deg, hsl(280, 40%, 25%) 0%, hsl(290, 35%, 20%) 100%)',
+        boxShadow: '0 4px 20px hsla(280, 50%, 30%, 0.5)',
       }}
     >
-      {/* Top row - Level and Exit */}
-      <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-10 h-10 rounded-lg flex items-center justify-center"
-            style={{
-              background: 'linear-gradient(135deg, #FFA500 0%, #FF8C00 100%)',
-            }}
-          >
-            <Trophy className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <p className="text-white/60 text-xs uppercase">Nivel</p>
-            <p className="text-white font-bold text-lg leading-tight">{level}</p>
-          </div>
-        </div>
-        
+      {/* Top row - Levels button and Level number */}
+      <div className="flex justify-between items-center px-4 py-3">
         <button
           onClick={onExit}
-          className="px-4 py-2 rounded-full font-semibold flex items-center gap-2 transition-all hover:scale-105"
+          className="px-4 py-2 rounded-full font-medium flex items-center gap-2 transition-all hover:scale-105"
           style={{
-            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            background: 'hsla(280, 30%, 15%, 0.8)',
             color: 'white',
+            border: '1px solid hsla(280, 40%, 40%, 0.5)',
           }}
         >
-          <X className="w-4 h-4" />
-          Salir
+          <ArrowLeft className="w-4 h-4" />
+          Levels
         </button>
-      </div>
-      
-      {/* Stats row - Horizontal */}
-      <div className="flex gap-3 mb-3">
-        <div 
-          className="flex-1 p-2 rounded-lg text-center"
-          style={{
-            background: 'hsla(0, 0%, 0%, 0.3)',
-            border: '1px solid hsla(0, 0%, 100%, 0.1)',
-          }}
-        >
-          <div className="flex items-center justify-center gap-1 mb-1">
-            <Zap className="w-4 h-4 text-yellow-400" />
-            <span className="text-white/60 text-xs uppercase">Movimientos</span>
-          </div>
-          <p className="text-white font-bold text-xl">{moves}</p>
-        </div>
         
         <div 
-          className="flex-1 p-2 rounded-lg text-center"
+          className="font-cinzel text-xl italic"
           style={{
-            background: 'hsla(0, 0%, 0%, 0.3)',
-            border: '1px solid hsla(0, 0%, 100%, 0.1)',
+            color: '#FFD700',
+            textShadow: '0 0 10px rgba(255, 215, 0, 0.5)',
           }}
         >
-          <div className="flex items-center justify-center gap-1 mb-1">
-            <Target className="w-4 h-4 text-pink-400" />
-            <span className="text-white/60 text-xs uppercase">Puntos</span>
-          </div>
-          <p className="text-white font-bold text-xl">{score}</p>
+          Level <span className="font-bold">{level}</span>
         </div>
       </div>
       
-      {/* Progress bar */}
-      <div>
-        <div className="flex justify-between items-center mb-1">
-          <span className="text-white/60 text-sm">Objetivo</span>
-          <span className="text-white font-semibold text-sm">{score} / {targetScore}</span>
-        </div>
+      {/* Stats row */}
+      <div className="flex gap-2 px-4 pb-3">
+        {/* Moves */}
         <div 
-          className="h-3 rounded-full overflow-hidden"
-          style={{ background: 'rgba(0, 0, 0, 0.4)' }}
+          className="flex-1 py-3 rounded-xl text-center"
+          style={{
+            background: 'hsla(280, 30%, 15%, 0.6)',
+            border: '1px solid hsla(280, 40%, 40%, 0.3)',
+          }}
         >
-          <div 
-            className="h-full transition-all duration-500 ease-out rounded-full"
-            style={{ 
-              width: `${progress}%`,
-              background: 'linear-gradient(90deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
-              boxShadow: '0 0 10px rgba(236, 72, 153, 0.5)',
-            }}
-          />
+          <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Moves</p>
+          <p className="text-white font-bold text-2xl">{moves}</p>
         </div>
+        
+        {/* Score */}
+        <div 
+          className="flex-1 py-3 rounded-xl text-center"
+          style={{
+            background: 'hsla(280, 30%, 15%, 0.6)',
+            border: '1px solid hsla(280, 40%, 40%, 0.3)',
+          }}
+        >
+          <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Score</p>
+          <p className="text-white font-bold text-2xl">{score}</p>
+        </div>
+        
+        {/* Objective */}
+        <div 
+          className="flex-1 py-3 rounded-xl text-center"
+          style={{
+            background: 'hsla(280, 30%, 15%, 0.6)',
+            border: '1px solid hsla(280, 40%, 40%, 0.3)',
+          }}
+        >
+          <p className="text-white/60 text-xs uppercase tracking-wide mb-1">Objective</p>
+          <p className="text-white font-bold text-lg">{score} <span className="text-white/50">/</span> {targetScore}</p>
+        </div>
+      </div>
+      
+      {/* Collect points text */}
+      <div className="text-center pb-4">
+        <p className="text-white/80 text-sm">
+          Collect <span className="font-bold text-white">{targetScore}</span> points
+        </p>
       </div>
       
       {/* Combo indicator */}
       {combo > 1 && (
         <div 
-          className="mt-3 text-center py-2 rounded-full animate-pulse"
+          className="text-center py-2 mx-4 mb-3 rounded-full animate-pulse"
           style={{
             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%)',
             border: '1px solid rgba(255, 215, 0, 0.5)',
