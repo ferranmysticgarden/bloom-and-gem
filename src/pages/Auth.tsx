@@ -111,16 +111,20 @@ const Auth = () => {
         .auth-page {
           min-height: 100vh;
           min-height: 100dvh;
+          height: 100vh;
+          height: 100dvh;
+          width: 100vw;
           display: flex;
           flex-direction: column;
           align-items: center;
-          justify-content: center;
-          padding: 16px;
+          justify-content: flex-end;
+          padding: 0 16px 40px 16px;
           position: relative;
           overflow: hidden;
           background-image: url(${mysticForestBg});
           background-size: cover;
           background-position: center;
+          box-sizing: border-box;
         }
         
         .auth-overlay {
@@ -141,14 +145,14 @@ const Auth = () => {
           z-index: 20;
           width: 100%;
           max-width: 380px;
-          padding: 32px 24px;
+          padding: 28px 24px;
           border-radius: 20px;
           background: rgba(255, 255, 255, 0.1);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
           border: 2px solid rgba(255, 215, 0, 0.3);
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-          margin: auto;
+          margin-bottom: 0;
         }
         
         .auth-title {
