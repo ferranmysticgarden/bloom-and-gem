@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import { Gift, Calendar, Gem } from 'lucide-react';
 import { DAILY_REWARDS } from '@/config/levels';
-import { cn } from '@/lib/utils';
 
 interface DailyRewardProps {
   streak: number;
@@ -16,14 +15,44 @@ export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps)
   const todayReward = DAILY_REWARDS[rewardIndex] || DAILY_REWARDS[0];
   
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="fairy-card p-6 max-w-sm w-full text-center animate-scale-in">
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        background: 'rgba(0, 0, 0, 0.8)',
+        backdropFilter: 'blur(4px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 100,
+        padding: '16px',
+      }}
+    >
+      <div 
+        style={{
+          position: 'relative',
+          maxWidth: '380px',
+          width: '100%',
+          textAlign: 'center',
+          padding: '24px',
+          borderRadius: '20px',
+          background: 'linear-gradient(135deg, rgba(60, 20, 80, 0.98) 0%, rgba(40, 15, 60, 0.98) 100%)',
+          border: '2px solid rgba(255, 215, 0, 0.4)',
+          boxShadow: '0 0 40px rgba(150, 50, 200, 0.3)',
+        }}
+      >
         {/* Sparkles */}
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
             className="sparkle text-yellow-400"
             style={{
+              position: 'absolute',
               left: `${10 + Math.random() * 80}%`,
               top: `${10 + Math.random() * 80}%`,
               animationDelay: `${Math.random() * 2}s`,
@@ -35,11 +64,11 @@ export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps)
         
         <Gift className="w-16 h-16 text-primary mx-auto mb-4 animate-bounce" />
         
-        <h2 className="font-cinzel text-2xl mb-2">¡Recompensa Diaria!</h2>
+        <h2 className="font-cinzel text-2xl mb-2" style={{ color: 'white' }}>¡Recompensa Diaria!</h2>
         
         <div className="flex items-center justify-center gap-2 mb-4">
-          <Calendar className="w-5 h-5 text-muted-foreground" />
-          <span className="text-muted-foreground">Día {((streak - 1) % 7) + 1} de 7</span>
+          <Calendar className="w-5 h-5" style={{ color: 'rgba(255,255,255,0.6)' }} />
+          <span style={{ color: 'rgba(255,255,255,0.6)' }}>Día {((streak - 1) % 7) + 1} de 7</span>
         </div>
         
         {/* Week progress */}
@@ -47,14 +76,23 @@ export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps)
           {DAILY_REWARDS.map((reward, i) => (
             <div
               key={i}
-              className={cn(
-                'w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold',
-                i < (streak % 7) || (streak % 7 === 0 && streak > 0)
-                  ? 'bg-primary text-primary-foreground'
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                background: i < (streak % 7) || (streak % 7 === 0 && streak > 0)
+                  ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)'
                   : i === (streak - 1) % 7
-                  ? 'bg-accent text-accent-foreground ring-2 ring-yellow-400'
-                  : 'bg-muted text-muted-foreground'
-              )}
+                  ? 'linear-gradient(135deg, #FFA500 0%, #FF8C00 100%)'
+                  : 'rgba(100, 100, 120, 0.3)',
+                color: 'white',
+                border: i === (streak - 1) % 7 ? '2px solid #FFD700' : 'none',
+              }}
             >
               {i + 1}
             </div>
@@ -62,15 +100,22 @@ export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps)
         </div>
         
         {/* Today's reward */}
-        <div className="bg-muted/50 rounded-xl p-4 mb-6">
-          <p className="text-sm text-muted-foreground mb-2">Recompensa de hoy:</p>
+        <div 
+          style={{
+            background: 'rgba(0, 0, 0, 0.3)',
+            borderRadius: '12px',
+            padding: '16px',
+            marginBottom: '20px',
+          }}
+        >
+          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '8px' }}>Recompensa de hoy:</p>
           <div className="flex items-center justify-center gap-4">
-            <div className="flex items-center gap-1 text-yellow-400">
+            <div className="flex items-center gap-1" style={{ color: '#FFD700' }}>
               <Gem className="w-5 h-5" />
               <span className="font-bold">{todayReward.gems}</span>
             </div>
             {Object.entries(todayReward.boosters || {}).map(([booster, count]) => (
-              <div key={booster} className="flex items-center gap-1">
+              <div key={booster} className="flex items-center gap-1" style={{ color: 'white' }}>
                 <span>{booster === 'bomb' ? '💣' : booster === 'hammer' ? '🔨' : booster === 'shuffle' ? '🔀' : '🌈'}</span>
                 <span className="font-bold">x{count}</span>
               </div>
@@ -78,13 +123,33 @@ export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps)
           </div>
         </div>
         
-        <button onClick={onClaim} className="magic-button w-full mb-3">
+        <button 
+          onClick={onClaim} 
+          style={{
+            width: '100%',
+            padding: '14px',
+            marginBottom: '12px',
+            borderRadius: '50px',
+            border: 'none',
+            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+            color: '#1a1a2e',
+            fontWeight: '700',
+            fontSize: '16px',
+            cursor: 'pointer',
+          }}
+        >
           ¡Reclamar!
         </button>
         
         <button
           onClick={onClose}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'rgba(255,255,255,0.6)',
+            fontSize: '14px',
+            cursor: 'pointer',
+          }}
         >
           Más tarde
         </button>
