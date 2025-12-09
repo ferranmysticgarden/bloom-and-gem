@@ -246,7 +246,7 @@ const Game = () => {
           display: 'flex',
           flexDirection: 'column',
           flex: 1,
-          padding: '16px 12px 12px 12px',
+          padding: '80px 12px 12px 12px',
           gap: '8px',
           maxWidth: '420px',
           margin: '0 auto',
