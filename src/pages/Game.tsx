@@ -131,9 +131,17 @@ const Game = () => {
     console.log('Purchasing:', itemId);
   }, []);
 
-  // Determine if level is won or lost
-  const isLevelWon = !gameState.isPlaying && gameState.score >= gameState.targetScore && gameState.board.length > 0;
-  const isLevelLost = !gameState.isPlaying && gameState.score < gameState.targetScore && gameState.moves <= 0 && gameState.board.length > 0;
+  // Determine if level is won or lost - con más logging para debug
+  const hasBoard = gameState.board && gameState.board.length > 0;
+  const isLevelWon = !gameState.isPlaying && hasBoard && gameState.score >= gameState.targetScore;
+  const isLevelLost = !gameState.isPlaying && hasBoard && gameState.score < gameState.targetScore && gameState.moves <= 0;
+  
+  // Debug: log state changes
+  useEffect(() => {
+    if (hasBoard && !gameState.isPlaying) {
+      console.log('Game ended - Won:', isLevelWon, 'Lost:', isLevelLost, 'Score:', gameState.score, 'Target:', gameState.targetScore);
+    }
+  }, [gameState.isPlaying, hasBoard, isLevelWon, isLevelLost, gameState.score, gameState.targetScore]);
 
   // Loading screen - show while checking auth or loading game
   if (loading || !authChecked) {
