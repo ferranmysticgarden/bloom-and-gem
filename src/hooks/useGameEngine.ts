@@ -268,17 +268,12 @@ export const useGameEngine = () => {
         return { ...prev, selectedGem: pos };
       }
       
-      const { row: r1, col: c1 } = prev.selectedGem;
-      const { row: r2, col: c2 } = pos;
-      
-      // Check if adjacent
-      const isAdjacent = (Math.abs(r1 - r2) === 1 && c1 === c2) || (Math.abs(c1 - c2) === 1 && r1 === r2);
-      
-      if (isAdjacent) {
-        // Will trigger swap in next render
-        return prev;
+      // If clicking the same gem, deselect
+      if (prev.selectedGem.row === pos.row && prev.selectedGem.col === pos.col) {
+        return { ...prev, selectedGem: null };
       }
       
+      // Select new gem (swap is handled by GameBoard's onGemSwap)
       return { ...prev, selectedGem: pos };
     });
   }, []);
@@ -430,20 +425,6 @@ export const useGameEngine = () => {
     }
   }, [gameState.board, gameState.isPlaying, processMatches]);
 
-  // Handle gem selection and swapping
-  useEffect(() => {
-    if (gameState.selectedGem) {
-      const handleSwap = (pos: Position) => {
-        const { row: r1, col: c1 } = gameState.selectedGem!;
-        const { row: r2, col: c2 } = pos;
-        const isAdjacent = (Math.abs(r1 - r2) === 1 && c1 === c2) || (Math.abs(c1 - c2) === 1 && r1 === r2);
-        
-        if (isAdjacent) {
-          swapGems(gameState.selectedGem!, pos);
-        }
-      };
-    }
-  }, [gameState.selectedGem, swapGems]);
 
   return {
     gameState,
