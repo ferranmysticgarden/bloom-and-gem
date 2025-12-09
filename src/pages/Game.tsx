@@ -24,21 +24,29 @@ const Game = () => {
   const [showDailyReward, setShowDailyReward] = useState(false);
   const [userEmail, setUserEmail] = useState<string>('');
 
+  const [authChecked, setAuthChecked] = useState(false);
+
   // Check auth and show daily reward
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('Auth error:', error);
-          navigate('/auth');
-          return;
-        }
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
         if (!session) {
           navigate('/auth');
-          return;
+        } else {
+          setUserEmail(session.user.email || '');
+          setAuthChecked(true);
         }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate('/auth');
+      } else {
         setUserEmail(session.user.email || '');
+        setAuthChecked(true);
         
         // Check daily reward
         const lastReward = localStorage.getItem('lastDailyReward');
@@ -46,12 +54,10 @@ const Game = () => {
         if (lastReward !== today) {
           setShowDailyReward(true);
         }
-      } catch (err) {
-        console.error('Auth check failed:', err);
-        navigate('/auth');
       }
-    };
-    checkAuth();
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const handlePlay = useCallback(() => {
@@ -129,8 +135,8 @@ const Game = () => {
   const isLevelWon = !gameState.isPlaying && gameState.score >= gameState.targetScore && gameState.board.length > 0;
   const isLevelLost = !gameState.isPlaying && gameState.score < gameState.targetScore && gameState.moves <= 0 && gameState.board.length > 0;
 
-  // Loading screen
-  if (loading) {
+  // Loading screen - show while checking auth or loading game
+  if (loading || !authChecked) {
     return (
       <div 
         style={{
