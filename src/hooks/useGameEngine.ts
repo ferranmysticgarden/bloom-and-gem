@@ -280,13 +280,20 @@ export const useGameEngine = () => {
 
   const processMatches = useCallback(() => {
     setGameState(prev => {
+      // Evitar procesar si el tablero está vacío o no estamos jugando
+      if (!prev.isPlaying || prev.board.length === 0) {
+        return prev;
+      }
+      
       const matches = findMatches(prev.board);
       
       if (matches.length === 0) {
-        // Check win/lose condition
+        // Check win/lose condition - PRIMERO verificamos puntuación
         if (prev.score >= prev.targetScore) {
           const newUnlockedLevels = Math.max(prev.unlockedLevels, prev.level + 1);
           const newGems = prev.gems + Math.floor(prev.score / 100);
+          
+          console.log('Level WON! Score:', prev.score, 'Target:', prev.targetScore);
           
           return {
             ...prev,
@@ -294,21 +301,25 @@ export const useGameEngine = () => {
             unlockedLevels: newUnlockedLevels,
             totalScore: prev.totalScore + prev.score,
             gems: newGems,
-            // Mark for saving
-            _shouldSave: { won: true, unlockedLevels: newUnlockedLevels, gems: newGems },
-          } as GameState & { _shouldSave?: unknown };
+            combo: 0,
+          };
         }
+        
+        // LUEGO verificamos si nos quedamos sin movimientos
         if (prev.moves <= 0) {
-          const newLives = prev.lives - 1;
+          const newLives = Math.max(0, prev.lives - 1);
+          
+          console.log('Level LOST! Score:', prev.score, 'Target:', prev.targetScore, 'Moves:', prev.moves);
           
           return {
             ...prev,
             isPlaying: false,
             lives: newLives,
-            // Mark for saving
-            _shouldSave: { lost: true, lives: newLives },
-          } as GameState & { _shouldSave?: unknown };
+            combo: 0,
+          };
         }
+        
+        // Sin matches pero aún jugando - solo resetear combo
         return { ...prev, combo: 0 };
       }
       
@@ -417,11 +428,19 @@ export const useGameEngine = () => {
     });
   }, [initializeBoard]);
 
-  // Process matches after board changes
+  // Process matches after board changes - con protección anti-loop
+  const processingRef = useRef(false);
   useEffect(() => {
-    if (gameState.isPlaying) {
-      const timer = setTimeout(processMatches, 300);
-      return () => clearTimeout(timer);
+    if (gameState.isPlaying && gameState.board.length > 0 && !processingRef.current) {
+      processingRef.current = true;
+      const timer = setTimeout(() => {
+        processMatches();
+        processingRef.current = false;
+      }, 300);
+      return () => {
+        clearTimeout(timer);
+        processingRef.current = false;
+      };
     }
   }, [gameState.board, gameState.isPlaying, processMatches]);
 
