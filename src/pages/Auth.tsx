@@ -39,6 +39,7 @@ const Auth = () => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast({ title: '¡Bienvenido de nuevo! ✨' });
+        navigate('/');
       } else {
         const { error } = await supabase.auth.signUp({ 
           email, 
@@ -49,8 +50,12 @@ const Auth = () => {
         });
         if (error) throw error;
         toast({ title: '¡Cuenta creada! 🎉', description: 'Ya puedes iniciar sesión' });
+        setIsLogin(true);
+        setPassword('');
+        setLoading(false);
+        return;
       }
-      navigate('/');
+      }
     } catch (error: any) {
       toast({
         title: 'Error',
