@@ -15,8 +15,17 @@ export const LevelSelect = memo(({ unlockedLevels, onSelectLevel, onBack, onExit
   
   return (
     <div 
-      className="min-h-screen p-4 pb-20 relative"
       style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        padding: '16px',
+        paddingBottom: '80px',
+        overflow: 'auto',
         backgroundImage: `url(${mysticForestBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',

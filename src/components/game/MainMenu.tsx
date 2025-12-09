@@ -35,13 +35,19 @@ export const MainMenu = memo(({
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
         
         .main-menu {
-          min-height: 100vh;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          width: 100%;
+          height: 100%;
           display: flex;
           flex-direction: column;
           align-items: center;
           padding: 16px;
-          position: relative;
           overflow: hidden;
+          overflow-y: auto;
           background-image: url(${mysticForestBg});
           background-size: cover;
           background-position: center;
