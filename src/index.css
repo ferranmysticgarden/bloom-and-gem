@@ -53,7 +53,9 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
-    /* iOS Safari fix */
+    /* iOS Safari fix for 100vh issue */
+    min-height: 100%;
+    min-height: -webkit-fill-available;
     -webkit-overflow-scrolling: touch;
     /* Prevent text selection on touch */
     -webkit-user-select: none;
