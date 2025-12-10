@@ -3,7 +3,7 @@ chcp 65001 >nul
 echo.
 echo ========================================
 echo    MYSTIC GARDEN - BUILD COMPLETO
-echo    Version 3.3.0 (330)
+echo    Version 3.3.0
 echo ========================================
 echo.
 
@@ -63,43 +63,23 @@ echo ========================================
 echo    PARA iOS (REQUIERE MAC CON XCODE):
 echo ========================================
 echo.
-echo    PASOS EN MAC:
-echo.
-echo    1. Clona o copia el proyecto al Mac
+echo    1. Copia el proyecto a un Mac
 echo    2. Abre Terminal en la carpeta del proyecto
 echo    3. Ejecuta estos comandos:
 echo.
 echo       npm install
 echo       npm run build
-echo       npx cap add ios       (solo primera vez)
+echo       npx cap add ios       (solo la primera vez)
 echo       npx cap sync ios
 echo       npx cap open ios
 echo.
-echo    4. En Xcode (IMPORTANTE):
-echo       - Selecciona el target "App"
-echo       - Signing ^& Capabilities:
-echo         * Team: tu Apple Developer Team
-echo         * Bundle Identifier: com.mysticgarden.game
-echo         * Signing Certificate: Distribution
-echo       - Build Settings:
-echo         * iOS Deployment Target: 13.0
-echo.
-echo    5. Para subir a App Store:
+echo    4. En Xcode:
+echo       - Signing: selecciona tu Apple Developer Team
 echo       - Product ^> Archive
-echo       - Window ^> Organizer
 echo       - Distribute App ^> App Store Connect
-echo       - Upload
 echo.
-echo    REQUISITOS iOS:
-echo    - Mac con macOS 12+ y Xcode 14+
+echo    REQUISITOS:
+echo    - Mac con macOS y Xcode instalado
 echo    - Apple Developer Account ($99/ano)
-echo    - Certificado de distribucion configurado
-echo    - App Store Connect: crear app con Bundle ID
-echo.
-echo    SOLUCION ERRORES COMUNES:
-echo    - "No signing certificate": Xcode ^> Preferences ^> Accounts ^> Manage Certificates
-echo    - "Provisioning profile": Automatic signing o crear en developer.apple.com
-echo    - Build failed: Clean Build Folder (Cmd+Shift+K)
-echo.
 echo ========================================
 pause
