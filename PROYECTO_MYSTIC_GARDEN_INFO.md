@@ -5,7 +5,7 @@
 |-------|-------|
 | Nombre | Mystic Garden |
 | App ID | com.mysticgarden.game |
-| Versión actual | 3.1.1 (versionCode 311) |
+| Versión actual | 3.2.2 (versionCode 322) |
 | Plataformas | Android, iOS, Web |
 
 ---
@@ -14,7 +14,7 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Archivo** | android/app/mystic-garden-key.jks |
+| **Archivo Original** | C:\Users\PC\OneDrive\jks mystic\mysticgarden-release.jks |
 | **Alias** | mysticgarden |
 | **Store Password** | mystic2025 |
 | **Key Password** | mystic2025 |
@@ -29,13 +29,7 @@
 
 ### Comando para verificar SHA1:
 ```cmd
-keytool -list -v -keystore android\app\mystic-garden-key.jks -storepass mystic2025 -alias mysticgarden
-```
-
-### Comando para buscar keystores en PC:
-```cmd
-cd C:\
-dir /s /b *.jks 2>nul
+keytool -list -v -keystore "C:\Users\PC\OneDrive\jks mystic\mysticgarden-release.jks" -storepass mystic2025 -alias mysticgarden
 ```
 
 ---
@@ -44,13 +38,13 @@ dir /s /b *.jks 2>nul
 
 | Archivo | Ubicación | Descripción |
 |---------|-----------|-------------|
-| **Keystore original** | `android/app/mystic-garden-key.jks` | NUNCA BORRAR NI REGENERAR |
+| **Keystore original** | `C:\Users\PC\OneDrive\jks mystic\mysticgarden-release.jks` | NUNCA BORRAR NI REGENERAR |
 | **Build Gradle** | `build-files/build.gradle` | Contiene versión y firma |
 | **Key Properties** | `build-files/key.properties` | Contraseñas del keystore |
 | **Capacitor Config** | `capacitor.config.ts` | Config de la app móvil |
 | **Script AAB** | `GENERAR-AAB.bat` | Script para generar AAB |
 | **Proyecto local** | `C:\Users\PC\bloom-and-gem` | Carpeta del proyecto |
-| **AAB generado** | `android/app/build/outputs/bundle/release/` | Donde se genera el AAB |
+| **AAB generado** | `android\app\build\outputs\bundle\release\` | Donde se genera el AAB |
 
 ---
 
@@ -61,30 +55,15 @@ dir /s /b *.jks 2>nul
 storePassword=mystic2025
 keyPassword=mystic2025
 keyAlias=mysticgarden
-storeFile=mystic-garden-key.jks
+storeFile=mysticgarden-release.jks
 ```
 
-### build-files/build.gradle (sección importante):
+### build-files/build.gradle (versión actual):
 ```gradle
 defaultConfig {
     applicationId "com.mysticgarden.game"
-    versionCode 310
-    versionName "3.1.0"
-}
-
-signingConfigs {
-    release {
-        keyAlias keystoreProperties['keyAlias']
-        keyPassword keystoreProperties['keyPassword']
-        storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-        storePassword keystoreProperties['storePassword']
-    }
-}
-
-buildTypes {
-    release {
-        signingConfig signingConfigs.release
-    }
+    versionCode 322
+    versionName "3.2.2"
 }
 ```
 
@@ -126,51 +105,40 @@ buildTypes {
 
 ---
 
-## 🚀 COMANDO COMPLETO PARA GENERAR AAB
+## 🚀 SCRIPT COMPLETO PARA GENERAR AAB
 
-```cmd
-cd C:\Users\PC\bloom-and-gem
-git stash
-git pull
-npm install
-npm run build
-npx cap sync android
-copy /Y "build-files\build.gradle" "android\app\build.gradle"
-copy /Y "build-files\key.properties" "android\key.properties"
-cd android
+El script `GENERAR-AAB.bat` hace todo automáticamente:
+1. Git stash y pull
+2. npm install
+3. npm run build
+4. npx cap sync android
+5. Copia keystore desde OneDrive
+6. Copia build.gradle y key.properties
+7. Verifica que el keystore existe
+8. Ejecuta gradlew bundleRelease
+9. Abre la carpeta del AAB
 
-REM Verificar keystore original - NO crear nuevo
-if exist "app\mystic-garden-key.jks" (
-    echo ========================================
-    echo    KEYSTORE ORIGINAL ENCONTRADO - OK
-    echo    SHA1: 8A:3F:9E:B2:85:AC:01:4F:74:AA:7D:7A:76:B8:05:79:A7:0F:3A:C5
-    echo ========================================
-) else (
-    echo ========================================
-    echo    ERROR: KEYSTORE ORIGINAL NO ENCONTRADO
-    echo    Debe estar en: android\app\mystic-garden-key.jks
-    echo    SHA1: 8A:3F:9E:B2:85:AC:01:4F:74:AA:7D:7A:76:B8:05:79:A7:0F:3A:C5
-    echo ========================================
-    pause
-    exit /b 1
-)
-
-gradlew.bat bundleRelease
-explorer app\build\outputs\bundle\release
-cd ..
-
-REM === iOS (en Mac con Xcode) ===
-REM npx cap sync ios
-REM npx cap open ios
-```
+**Para ejecutar:** Doble clic en `GENERAR-AAB.bat`
 
 ---
 
 ## 📱 iOS (requiere Mac con Xcode)
 ```cmd
+npm install
+npm run build
+npx cap add ios       (solo la primera vez)
 npx cap sync ios
 npx cap open ios
 ```
+
+En Xcode:
+- Signing: selecciona tu Apple Developer Team
+- Product > Archive
+- Distribute App > App Store Connect
+
+**Requisitos:**
+- Mac con macOS y Xcode instalado
+- Apple Developer Account ($99/año)
 
 ---
 
@@ -180,39 +148,33 @@ npx cap open ios
 2. **SIEMPRE** verificar SHA1 antes de subir AAB
 3. **SIEMPRE** hacer backup del keystore original
 4. El keystore con SHA1 `8A:3F:9E:B2:85:AC:01:4F:74:AA:7D:7A:76:B8:05:79:A7:0F:3A:C5` es el ÚNICO válido
-5. **SIEMPRE** copiar build.gradle y key.properties desde build-files/ antes de compilar
+5. El keystore está en OneDrive: `C:\Users\PC\OneDrive\jks mystic\mysticgarden-release.jks`
 
 ---
 
 ## 🚨 ERRORES COMETIDOS Y CÓMO EVITARLOS
 
 ### Error 1: Incluir `keytool -genkey` en el script
-- **Qué pasó:** Se incluyó un comando para crear un keystore nuevo si no existía
 - **Problema:** Esto DESTRUYE la firma original y Google Play rechaza el AAB
-- **Solución:** NUNCA incluir `keytool -genkey` en ningún script. Solo verificar si existe.
-- **Cómo evitarlo:** El script debe PARAR si no encuentra el keystore, NO crear uno nuevo
+- **Solución:** NUNCA incluir `keytool -genkey`. Solo verificar si existe.
 
 ### Error 2: No verificar el SHA1 antes de subir
-- **Qué pasó:** Se subió un AAB firmado con un keystore diferente
 - **Problema:** Google Play rechaza cualquier AAB que no tenga el SHA1 original
 - **Solución:** SIEMPRE ejecutar `keytool -list` y verificar SHA1 antes de subir
 - **SHA1 correcto:** `8A:3F:9E:B2:85:AC:01:4F:74:AA:7D:7A:76:B8:05:79:A7:0F:3A:C5`
 
-### Error 3: Olvidar copiar los archivos de build-files/
-- **Qué pasó:** Se compiló sin copiar build.gradle y key.properties actualizados
-- **Problema:** Se usó versión incorrecta o configuración de firma incorrecta
-- **Solución:** SIEMPRE ejecutar los comandos `copy /Y` antes de `gradlew.bat bundleRelease`
-
-### Error 4: Dar bloques de comandos incompletos
-- **Qué pasó:** Se pasó un bloque sin la verificación del keystore
-- **Problema:** El usuario puede ejecutar sin darse cuenta de que falta el keystore
-- **Solución:** SIEMPRE dar el bloque COMPLETO con verificación del keystore
+### Error 3: Buscar keystore en ubicación incorrecta
+- **Problema:** El keystore NO está en el proyecto, está en OneDrive
+- **Solución:** El script copia desde `C:\Users\PC\OneDrive\jks mystic\mysticgarden-release.jks`
 
 ---
 
-## 📝 NOTAS PARA EL FUTURO
+## 📝 PARA PRÓXIMAS VERSIONES
 
-- La versión actual es **3.1.0 (versionCode 310)**
-- Para la próxima versión: incrementar versionCode y versionName en `build-files/build.gradle`
-- El keystore NUNCA debe regenerarse - si se pierde, hay que buscar backup o contactar Google
-- Los archivos de firma están en `build-files/` y deben copiarse antes de compilar
+Para subir una nueva versión:
+1. Editar `build-files/build.gradle`:
+   - Incrementar `versionCode` (ej: 322 → 323)
+   - Incrementar `versionName` (ej: "3.2.2" → "3.2.3")
+2. Actualizar el header en `GENERAR-AAB.bat` con la nueva versión
+3. Ejecutar `GENERAR-AAB.bat`
+4. Subir el AAB a Google Play Console
