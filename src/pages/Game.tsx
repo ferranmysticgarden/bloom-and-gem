@@ -231,11 +231,9 @@ const Game = () => {
       <>
         <MainMenu
           lives={gameState.lives}
-          maxLives={gameState.maxLives}
           gems={gameState.gems}
           unlockedLevels={gameState.unlockedLevels}
           totalScore={gameState.totalScore}
-          streak={gameState.streak}
           userEmail={userEmail}
           onPlay={handlePlay}
           onLevelSelect={() => setScreen('level-select')}
@@ -243,9 +241,9 @@ const Game = () => {
           onLogout={handleLogout}
           onExit={handleLogout}
         />
-        {showDailyReward && (
+      {showDailyReward && (
           <DailyReward
-            streak={gameState.streak + 1}
+            streak={((gameState.streak || 0) % 7) + 1}
             onClaim={handleClaimDailyReward}
             onClose={() => setShowDailyReward(false)}
           />
@@ -375,65 +373,7 @@ const Game = () => {
         />
       )}
 
-      {/* Pause modal */}
-      {screen === 'paused' && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 50,
-          }}
-        >
-          <div 
-            style={{
-              padding: '32px',
-              textAlign: 'center',
-              borderRadius: '16px',
-              background: 'linear-gradient(135deg, rgba(60, 20, 80, 0.95) 0%, rgba(40, 15, 60, 0.95) 100%)',
-              border: '2px solid rgba(255, 215, 0, 0.3)',
-            }}
-          >
-            <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '24px', marginBottom: '24px', color: 'white' }}>Pausado</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <button
-                onClick={() => setScreen('playing')}
-                style={{
-                  padding: '12px 24px',
-                  borderRadius: '9999px',
-                  fontWeight: '600',
-                  background: 'linear-gradient(135deg, #FFA500 0%, #FF8C00 100%)',
-                  color: '#1a1a2e',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                Continuar
-              </button>
-              <button
-                onClick={handleMainMenu}
-                style={{
-                  padding: '12px 24px',
-                  borderRadius: '9999px',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  background: 'transparent',
-                  color: 'white',
-                  cursor: 'pointer',
-                }}
-              >
-                Menú Principal
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Pause modal removed - was dead code (screen never set to 'paused') */}
     </div>
   );
 };

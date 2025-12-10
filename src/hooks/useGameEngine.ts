@@ -10,7 +10,7 @@ const generateId = () => Math.random().toString(36).substring(2, 9);
 const getRandomGemType = (numTypes: number): GemType => {
   const safeNumTypes = Math.max(1, Math.min(numTypes || 4, GEM_TYPES.length));
   const types = GEM_TYPES.slice(0, safeNumTypes);
-  return types[Math.floor(Math.random() * types.length)] || 'red';
+  return types[Math.floor(Math.random() * types.length)] || 'leaf'; // Fallback a tipo válido
 };
 
 const createGem = (row: number, col: number, numTypes: number, specialChance: number): Gem => {
@@ -366,7 +366,6 @@ export const useGameEngine = () => {
       
       const newBoard = prev.board.map(row => [...row]);
       const size = newBoard.length;
-      const config = LEVELS[prev.level - 1] || LEVELS[0];
       let destroyed = 0;
       
       // Destroy 3x3 area
@@ -395,7 +394,6 @@ export const useGameEngine = () => {
       if (prev.boosters.hammer <= 0) return prev;
       
       const newBoard = prev.board.map(row => [...row]);
-      const config = LEVELS[prev.level - 1] || LEVELS[0];
       
       if (newBoard[pos.row][pos.col]) {
         newBoard[pos.row][pos.col] = null;
