@@ -28,9 +28,13 @@ const Game = () => {
 
   // Check auth and show daily reward
   useEffect(() => {
+    let mounted = true;
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        if (!mounted) return;
+        
         if (!session) {
           navigate('/auth');
         } else {
@@ -42,22 +46,30 @@ const Game = () => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      
       if (!session) {
         navigate('/auth');
       } else {
         setUserEmail(session.user.email || '');
         setAuthChecked(true);
         
-        // Check daily reward
-        const lastReward = localStorage.getItem('lastDailyReward');
-        const today = new Date().toDateString();
-        if (lastReward !== today) {
-          setShowDailyReward(true);
-        }
+        // Check daily reward - solo después de que el menú esté listo
+        setTimeout(() => {
+          if (!mounted) return;
+          const lastReward = localStorage.getItem('lastDailyReward');
+          const today = new Date().toDateString();
+          if (lastReward !== today) {
+            setShowDailyReward(true);
+          }
+        }, 500); // Pequeño delay para que el menú se cargue primero
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const handlePlay = useCallback(() => {
@@ -153,15 +165,62 @@ const Game = () => {
           left: 0,
           right: 0,
           bottom: 0,
+          width: '100vw',
+          height: '100vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundImage: `url(${mysticForestBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          background: 'linear-gradient(180deg, #1a0a2e 0%, #16213e 50%, #0f0c29 100%)',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ color: 'white', fontSize: '20px', fontFamily: "'Cinzel', serif" }}>Cargando...</div>
+        {/* Logo/Title */}
+        <div 
+          style={{ 
+            fontFamily: "'Cinzel', serif", 
+            fontSize: '32px', 
+            fontWeight: 'bold',
+            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            marginBottom: '24px',
+            textShadow: '0 0 30px rgba(255,215,0,0.3)',
+          }}
+        >
+          Mystic Garden
+        </div>
+        
+        {/* Loading spinner */}
+        <div 
+          style={{
+            width: '50px',
+            height: '50px',
+            border: '4px solid rgba(255,255,255,0.1)',
+            borderTop: '4px solid #FFD700',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+          }}
+        />
+        
+        <div 
+          style={{ 
+            color: 'rgba(255,255,255,0.7)', 
+            fontSize: '16px', 
+            fontFamily: "'Quicksand', sans-serif",
+            marginTop: '20px',
+          }}
+        >
+          Cargando...
+        </div>
+        
+        {/* CSS for spinner animation */}
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }

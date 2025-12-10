@@ -20,7 +20,12 @@ export const GameOver = memo(({
   onMainMenu,
 }: GameOverProps) => {
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div 
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
+      style={{
+        background: 'rgba(0, 0, 0, 0.7)',
+      }}
+    >
       <div className="fairy-card p-8 max-w-sm w-full text-center animate-scale-in">
         <div className="relative mb-4">
           <Heart className="w-16 h-16 text-muted-foreground mx-auto" />
