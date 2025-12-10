@@ -3,7 +3,7 @@ chcp 65001 >nul
 echo.
 echo ========================================
 echo    MYSTIC GARDEN - BUILD COMPLETO
-echo    Version 3.0.7
+echo    Version 3.1.1
 echo ========================================
 echo.
 
@@ -22,25 +22,21 @@ call npm run build
 echo [4/6] Sync Android...
 call npx cap sync android
 
-echo [5/6] Copiando configuracion Android...
+echo [5/6] Copiando configuracion...
+copy /Y "C:\Users\PC\OneDrive\jks mystic\mysticgarden-release.jks" "android\app\mysticgarden-release.jks"
 copy /Y "build-files\build.gradle" "android\app\build.gradle"
 copy /Y "build-files\key.properties" "android\key.properties"
 
 cd android
 
-REM IMPORTANTE: No crear keystore nuevo - usar el original existente
-if exist "app\mystic-garden-key.jks" (
+if exist "app\mysticgarden-release.jks" (
     echo ========================================
-    echo    KEYSTORE ORIGINAL ENCONTRADO
-    echo    Ruta: android\app\mystic-garden-key.jks
+    echo    KEYSTORE ORIGINAL ENCONTRADO - OK
+    echo    SHA1: 8A:3F:9E:B2:85:AC:01:4F:74:AA:7D:7A:76:B8:05:79:A7:0F:3A:C5
     echo ========================================
 ) else (
     echo ========================================
-    echo    ERROR: KEYSTORE NO ENCONTRADO!
-    echo    Debes tener el archivo original en:
-    echo    android\app\mystic-garden-key.jks
-    echo.
-    echo    SHA1 original: 8A:3F:9E:B2:85:AC:01:4F:74:AA:7D:7A:76:B8:05:79:A7:0F:3A:C5
+    echo    ERROR: KEYSTORE NO ENCONTRADO
     echo ========================================
     pause
     exit /b 1
