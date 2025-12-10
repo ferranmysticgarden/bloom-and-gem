@@ -120,13 +120,18 @@ const Auth = () => {
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
         
         .auth-page {
-          min-height: 100vh;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          width: 100%;
+          height: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 20px;
-          position: relative;
-          overflow: hidden;
+          overflow: auto;
           background-image: url(${mysticForestBg});
           background-size: cover;
           background-position: center;
@@ -161,11 +166,9 @@ const Auth = () => {
           max-width: 420px;
           padding: 40px 30px;
           border-radius: 20px;
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
+          background: rgba(30, 20, 50, 0.95);
           border: 2px solid rgba(255, 215, 0, 0.3);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
         
         .auth-title {
