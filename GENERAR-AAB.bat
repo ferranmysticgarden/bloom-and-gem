@@ -3,7 +3,7 @@ chcp 65001 >nul
 echo.
 echo ========================================
 echo    MYSTIC GARDEN - BUILD COMPLETO
-echo    Version 3.2.1
+echo    Version 3.2.2
 echo ========================================
 echo.
 
