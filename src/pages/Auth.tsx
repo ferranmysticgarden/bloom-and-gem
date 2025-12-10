@@ -157,6 +157,7 @@ const Auth = () => {
           z-index: 10;
           background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,215,0,0.6));
           box-shadow: 0 0 10px rgba(255,215,0,0.5);
+          opacity: 0.6;
         }
         
         .auth-card {
@@ -399,18 +400,16 @@ const Auth = () => {
           </div>
         ))}
 
-        {/* Floating particles */}
-        {particles.map((particle) => (
+        {/* Static particles - no animation to prevent trembling */}
+        {particles.slice(0, 12).map((particle) => (
           <div
             key={particle.id}
             className="auth-particle"
             style={{
               left: `${particle.left}%`,
-              bottom: '-10px',
+              top: `${20 + particle.left * 0.6}%`,
               width: `${particle.size}px`,
               height: `${particle.size}px`,
-              animation: `float-up ${particle.duration}s linear infinite`,
-              animationDelay: `${particle.delay}s`,
             }}
           />
         ))}
