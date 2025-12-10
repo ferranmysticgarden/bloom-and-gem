@@ -29,6 +29,7 @@ const Game = () => {
   // Check auth and show daily reward
   useEffect(() => {
     let mounted = true;
+    let hasCheckedReward = false;
     
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -54,15 +55,25 @@ const Game = () => {
         setUserEmail(session.user.email || '');
         setAuthChecked(true);
         
-        // Check daily reward - solo después de que el menú esté listo
-        setTimeout(() => {
-          if (!mounted) return;
-          const lastReward = localStorage.getItem('lastDailyReward');
-          const today = new Date().toDateString();
-          if (lastReward !== today) {
-            setShowDailyReward(true);
-          }
-        }, 500); // Pequeño delay para que el menú se cargue primero
+        // Solo mostrar recompensa si ya estaba logueado (no login inicial)
+        // Verificar si hay datos de progreso previos en localStorage
+        const hasPlayedBefore = localStorage.getItem('lastDailyReward') !== null || 
+                                localStorage.getItem('gameStarted') !== null;
+        
+        if (hasPlayedBefore && !hasCheckedReward) {
+          hasCheckedReward = true;
+          setTimeout(() => {
+            if (!mounted) return;
+            const lastReward = localStorage.getItem('lastDailyReward');
+            const today = new Date().toDateString();
+            if (lastReward !== today) {
+              setShowDailyReward(true);
+            }
+          }, 1000);
+        }
+        
+        // Marcar que el usuario ha iniciado el juego al menos una vez
+        localStorage.setItem('gameStarted', 'true');
       }
     });
 
