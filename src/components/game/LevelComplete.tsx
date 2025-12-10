@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState, useMemo } from 'react';
 import { Star } from 'lucide-react';
 import crystalCaveImg from '@/assets/crystal-cave.jpg';
 
@@ -11,32 +11,49 @@ interface LevelCompleteProps {
   onMainMenu: () => void;
 }
 
-// Confetti particle component
-const Confetti = ({ count = 100 }: { count?: number }) => {
+// Confetti particle component - memoized
+const Confetti = memo(({ count = 100 }: { count?: number }) => {
   const colors = ['#FFD700', '#FF69B4', '#00CED1', '#9370DB', '#FF6347', '#32CD32'];
+  
+  // Pre-generate confetti data
+  const confettiData = useMemo(() => 
+    Array.from({ length: count }).map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      width: 4 + Math.random() * 8,
+      height: 8 + Math.random() * 12,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+      duration: 3 + Math.random() * 4,
+      delay: Math.random() * 3,
+      rotation: Math.random() * 360,
+    }))
+  , [count]);
   
   return (
     <>
-      {Array.from({ length: count }).map((_, i) => (
+      {confettiData.map((c) => (
         <div
-          key={i}
+          key={c.id}
           className="absolute pointer-events-none"
           style={{
-            left: `${Math.random() * 100}%`,
+            left: `${c.left}%`,
             top: `-10px`,
-            width: `${4 + Math.random() * 8}px`,
-            height: `${8 + Math.random() * 12}px`,
-            background: colors[Math.floor(Math.random() * colors.length)],
-            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-            animation: `confetti-fall ${3 + Math.random() * 4}s linear infinite`,
-            animationDelay: `${Math.random() * 3}s`,
-            transform: `rotate(${Math.random() * 360}deg)`,
+            width: `${c.width}px`,
+            height: `${c.height}px`,
+            background: c.color,
+            borderRadius: c.borderRadius,
+            animation: `confetti-fall ${c.duration}s linear infinite`,
+            animationDelay: `${c.delay}s`,
+            transform: `rotate(${c.rotation}deg)`,
           }}
         />
       ))}
     </>
   );
-};
+});
+
+Confetti.displayName = 'Confetti';
 
 export const LevelComplete = memo(({
   level,
@@ -49,6 +66,21 @@ export const LevelComplete = memo(({
   const [showContent, setShowContent] = useState(false);
   const stars = score >= targetScore * 2 ? 3 : score >= targetScore * 1.5 ? 2 : 1;
   
+  // Pre-generate floating particles
+  const floatingParticles = useMemo(() => {
+    const particleColors = ['#FFD700', '#FF69B4', '#00CED1', '#9370DB'];
+    return Array.from({ length: 30 }).map((_, i) => ({
+      id: i,
+      width: 4 + Math.random() * 6,
+      height: 4 + Math.random() * 6,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      color: particleColors[Math.floor(Math.random() * 4)],
+      duration: 4 + Math.random() * 4,
+      delay: Math.random() * 4,
+    }));
+  }, []);
+  
   useEffect(() => {
     const timer = setTimeout(() => setShowContent(true), 500);
     return () => clearTimeout(timer);
@@ -59,19 +91,19 @@ export const LevelComplete = memo(({
       {/* Confetti */}
       <Confetti count={150} />
       
-      {/* Floating particles */}
-      {Array.from({ length: 30 }).map((_, i) => (
+      {/* Floating particles - using pre-generated values */}
+      {floatingParticles.map((p) => (
         <div
-          key={`particle-${i}`}
+          key={`particle-${p.id}`}
           className="absolute rounded-full pointer-events-none"
           style={{
-            width: 4 + Math.random() * 6,
-            height: 4 + Math.random() * 6,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            background: ['#FFD700', '#FF69B4', '#00CED1', '#9370DB'][Math.floor(Math.random() * 4)],
-            animation: `float-glow ${4 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 4}s`,
+            width: p.width,
+            height: p.height,
+            left: `${p.left}%`,
+            top: `${p.top}%`,
+            background: p.color,
+            animation: `float-glow ${p.duration}s ease-in-out infinite`,
+            animationDelay: `${p.delay}s`,
           }}
         />
       ))}

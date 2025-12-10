@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -12,14 +12,14 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Generate floating particles
-  const particles = Array.from({ length: 30 }, (_, i) => ({
+  // Generate floating particles - memoized to prevent re-renders
+  const particles = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
     id: i,
     left: Math.random() * 100,
     size: 3 + Math.random() * 5,
     delay: Math.random() * 6,
     duration: 5 + Math.random() * 4,
-  }));
+  })), []);
 
   useEffect(() => {
     let mounted = true;

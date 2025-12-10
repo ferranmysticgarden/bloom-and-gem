@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { Play, Grid3X3, ShoppingBag, LogOut, Power } from 'lucide-react';
 import mysticForestBg from '@/assets/mystic-forest-bg.jpg';
 
@@ -29,6 +29,19 @@ export const MainMenu = memo(({
   onLogout,
   onExit,
 }: MainMenuProps) => {
+  // Pre-generate particle positions to avoid re-renders
+  const particles = useMemo(() => 
+    Array.from({ length: 25 }).map((_, i) => ({
+      id: i,
+      width: 3 + Math.random() * 5,
+      height: 3 + Math.random() * 5,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 8,
+      duration: 6 + Math.random() * 6,
+    }))
+  , []);
+  
   return (
     <>
       <style>{`
@@ -326,18 +339,18 @@ export const MainMenu = memo(({
         {/* Overlay */}
         <div className="menu-overlay" />
         
-        {/* Floating particles */}
-        {Array.from({ length: 25 }).map((_, i) => (
+        {/* Floating particles - using pre-generated values */}
+        {particles.map((p) => (
           <div
-            key={i}
+            key={p.id}
             className="menu-particle"
             style={{
-              width: 3 + Math.random() * 5,
-              height: 3 + Math.random() * 5,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${6 + Math.random() * 6}s`,
+              width: p.width,
+              height: p.height,
+              left: `${p.left}%`,
+              top: `${p.top}%`,
+              animationDelay: `${p.delay}s`,
+              animationDuration: `${p.duration}s`,
             }}
           />
         ))}

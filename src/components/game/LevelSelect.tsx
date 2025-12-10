@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { Lock, Star, ArrowLeft, X } from 'lucide-react';
 import { LEVELS } from '@/config/levels';
 import mysticForestBg from '@/assets/mystic-forest-bg.jpg';
@@ -12,6 +12,18 @@ interface LevelSelectProps {
 
 export const LevelSelect = memo(({ unlockedLevels, onSelectLevel, onBack, onExit }: LevelSelectProps) => {
   const displayLevels = LEVELS.slice(0, 50);
+  
+  // Pre-generate particle positions
+  const particles = useMemo(() => Array.from({ length: 20 }).map((_, i) => ({
+    id: i,
+    width: 3 + Math.random() * 5,
+    height: 3 + Math.random() * 5,
+    left: Math.random() * 100,
+    top: Math.random() * 100,
+    duration: 6 + Math.random() * 6,
+    delay: Math.random() * 8,
+  })), []);
+  
   
   return (
     <div 
@@ -133,20 +145,20 @@ export const LevelSelect = memo(({ unlockedLevels, onSelectLevel, onBack, onExit
         </div>
       </div>
 
-      {/* Floating particles */}
-      {Array.from({ length: 20 }).map((_, i) => (
+      {/* Floating particles - using pre-generated values */}
+      {particles.map((p) => (
         <div
-          key={i}
+          key={p.id}
           className="absolute rounded-full pointer-events-none z-0"
           style={{
-            width: 3 + Math.random() * 5,
-            height: 3 + Math.random() * 5,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
+            width: p.width,
+            height: p.height,
+            left: `${p.left}%`,
+            top: `${p.top}%`,
             background: `radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,215,0,0.6))`,
             boxShadow: '0 0 10px rgba(255,215,0,0.5)',
-            animation: `float-particle ${6 + Math.random() * 6}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 8}s`,
+            animation: `float-particle ${p.duration}s ease-in-out infinite`,
+            animationDelay: `${p.delay}s`,
           }}
         />
       ))}
