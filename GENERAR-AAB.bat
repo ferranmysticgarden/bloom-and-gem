@@ -3,7 +3,7 @@ chcp 65001 >nul
 echo.
 echo ========================================
 echo    MYSTIC GARDEN - BUILD COMPLETO
-echo    Version 3.0.6
+echo    Version 3.0.7
 echo ========================================
 echo.
 
@@ -28,12 +28,22 @@ copy /Y "build-files\key.properties" "android\key.properties"
 
 cd android
 
-REM Solo crear keystore si NO existe (para mantener la firma original)
-if not exist "app\mystic-garden-key.jks" (
-    echo Creando keystore nuevo...
-    keytool -genkey -v -keystore app\mystic-garden-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias mysticgarden -storepass mystic2025 -keypass mystic2025 -dname "CN=Mystic Garden, OU=Games, O=Evoluxe, L=Madrid, ST=Madrid, C=ES"
+REM IMPORTANTE: No crear keystore nuevo - usar el original existente
+if exist "app\mystic-garden-key.jks" (
+    echo ========================================
+    echo    KEYSTORE ORIGINAL ENCONTRADO
+    echo    Ruta: android\app\mystic-garden-key.jks
+    echo ========================================
 ) else (
-    echo Keystore existente encontrado - usando el original
+    echo ========================================
+    echo    ERROR: KEYSTORE NO ENCONTRADO!
+    echo    Debes tener el archivo original en:
+    echo    android\app\mystic-garden-key.jks
+    echo.
+    echo    SHA1 original: 8A:3F:9E:B2:85:AC:01:4F:74:AA:7D:7A:76:B8:05:79:A7:0F:3A:C5
+    echo ========================================
+    pause
+    exit /b 1
 )
 
 echo [6/6] Generando AAB firmado...
