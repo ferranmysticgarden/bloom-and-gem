@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { Gift, Calendar, Gem } from 'lucide-react';
 import { DAILY_REWARDS } from '@/config/levels';
 
@@ -13,6 +13,14 @@ export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps)
   const safeStreak = Math.max(1, streak || 1);
   const rewardIndex = Math.max(0, Math.min((safeStreak - 1) % 7, DAILY_REWARDS.length - 1));
   const todayReward = DAILY_REWARDS[rewardIndex] || DAILY_REWARDS[0];
+  
+  // Pre-generate sparkle positions
+  const sparkles = useMemo(() => Array.from({ length: 8 }).map((_, i) => ({
+    id: i,
+    left: 10 + Math.random() * 80,
+    top: 10 + Math.random() * 80,
+    delay: Math.random() * 2,
+  })), []);
   
   return (
     <div 
@@ -45,16 +53,16 @@ export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps)
           boxShadow: '0 0 40px rgba(150, 50, 200, 0.3)',
         }}
       >
-        {/* Sparkles */}
-        {Array.from({ length: 8 }).map((_, i) => (
+        {/* Sparkles - using pre-generated values */}
+        {sparkles.map((s) => (
           <div
-            key={i}
+            key={s.id}
             className="sparkle text-yellow-400"
             style={{
               position: 'absolute',
-              left: `${10 + Math.random() * 80}%`,
-              top: `${10 + Math.random() * 80}%`,
-              animationDelay: `${Math.random() * 2}s`,
+              left: `${s.left}%`,
+              top: `${s.top}%`,
+              animationDelay: `${s.delay}s`,
             }}
           >
             ✨
