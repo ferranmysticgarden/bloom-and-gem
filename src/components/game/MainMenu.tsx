@@ -65,11 +65,12 @@ export const MainMenu = memo(({
           flex-direction: column;
           align-items: center;
           padding: 16px;
-          overflow: hidden;
+          overflow-x: hidden;
           overflow-y: auto;
           background-image: url(${mysticForestBg});
           background-size: cover;
           background-position: center;
+          box-sizing: border-box;
         }
         
         .menu-overlay {
@@ -153,15 +154,7 @@ export const MainMenu = memo(({
         }
         
         .title-emojis span {
-          animation: bounce 1s ease-in-out infinite;
-        }
-        
-        .title-emojis span:nth-child(2) { animation-delay: 0.2s; }
-        .title-emojis span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
+          display: inline-block;
         }
         
         .title-subtitle {
