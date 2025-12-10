@@ -24,8 +24,7 @@ export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps)
         bottom: 0,
         width: '100%',
         height: '100%',
-        background: 'rgba(0, 0, 0, 0.8)',
-        backdropFilter: 'blur(4px)',
+        background: 'rgba(0, 0, 0, 0.85)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -71,19 +70,30 @@ export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps)
           <span style={{ color: 'rgba(255,255,255,0.6)' }}>Día {((streak - 1) % 7) + 1} de 7</span>
         </div>
         
-        {/* Week progress */}
-        <div className="flex justify-center gap-2 mb-6">
+        {/* Week progress - HORIZONTAL */}
+        <div 
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '24px',
+            flexWrap: 'nowrap',
+          }}
+        >
           {DAILY_REWARDS.map((reward, i) => (
             <div
               key={i}
               style={{
-                width: '32px',
-                height: '32px',
+                width: '36px',
+                height: '36px',
+                minWidth: '36px',
                 borderRadius: '8px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '12px',
+                fontSize: '14px',
                 fontWeight: 'bold',
                 background: i < (streak % 7) || (streak % 7 === 0 && streak > 0)
                   ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)'
@@ -92,6 +102,7 @@ export const DailyReward = memo(({ streak, onClaim, onClose }: DailyRewardProps)
                   : 'rgba(100, 100, 120, 0.3)',
                 color: 'white',
                 border: i === (streak - 1) % 7 ? '2px solid #FFD700' : 'none',
+                boxShadow: i === (streak - 1) % 7 ? '0 0 10px rgba(255,215,0,0.5)' : 'none',
               }}
             >
               {i + 1}

@@ -16,6 +16,9 @@
     <meta name="msapplication-TileColor" content="#1a0a2e" />
     <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
     
+    <!-- Format detection -->
+    <meta name="format-detection" content="telephone=no" />
+    
     <!-- Icons -->
     <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
@@ -29,9 +32,67 @@
     <!-- Preconnect to Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Critical CSS for loading state - Prevents white flash and shows loading immediately -->
+    <style>
+      html, body, #root {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: linear-gradient(180deg, #1a0a2e 0%, #16213e 50%, #0f0c29 100%);
+      }
+      
+      /* Loading fallback before React loads */
+      .app-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(180deg, #1a0a2e 0%, #16213e 50%, #0f0c29 100%);
+        z-index: 9999;
+      }
+      
+      .app-loading-title {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 28px;
+        font-weight: bold;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 20px;
+      }
+      
+      .app-loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255,255,255,0.1);
+        border-top: 3px solid #FFD700;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Loading fallback - removed when React mounts -->
+      <div class="app-loading">
+        <div class="app-loading-title">Mystic Garden</div>
+        <div class="app-loading-spinner"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -45,6 +45,7 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
   html, body, #root {
     height: 100%;
@@ -52,6 +53,11 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
+    /* iOS Safari fix */
+    -webkit-overflow-scrolling: touch;
+    /* Prevent text selection on touch */
+    -webkit-user-select: none;
+    user-select: none;
   }
   body {
     @apply bg-background text-foreground font-quicksand;
@@ -59,6 +65,8 @@
       radial-gradient(ellipse at top, hsl(280 60% 15%) 0%, transparent 50%),
       radial-gradient(ellipse at bottom, hsl(200 60% 10%) 0%, transparent 50%),
       linear-gradient(180deg, hsl(270 50% 8%) 0%, hsl(250 50% 5%) 100%);
+    /* Safari backdrop-filter fix */
+    -webkit-backdrop-filter: none;
   }
 }
 
