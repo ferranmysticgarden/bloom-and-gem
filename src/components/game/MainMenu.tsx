@@ -1,6 +1,8 @@
-import { memo, useMemo } from 'react';
-import { Play, Grid3X3, ShoppingBag, LogOut, Power } from 'lucide-react';
+import { memo, useMemo, useState } from 'react';
+import { Play, Grid3X3, ShoppingBag, LogOut, Power, Download } from 'lucide-react';
 import mysticForestBg from '@/assets/mystic-forest-bg.jpg';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
+import { InstallPrompt } from './InstallPrompt';
 
 interface MainMenuProps {
   lives: number;
@@ -27,6 +29,9 @@ export const MainMenu = memo(({
   onLogout,
   onExit,
 }: MainMenuProps) => {
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const { isInstallable, isInstalled, isIOS, isAndroid, install, isStandalone } = usePWAInstall();
+
   // Pre-generate particle positions to avoid re-renders
   const particles = useMemo(() => 
     Array.from({ length: 25 }).map((_, i) => ({
@@ -39,6 +44,9 @@ export const MainMenu = memo(({
       duration: 6 + Math.random() * 6,
     }))
   , []);
+  
+  // Mostrar botón de instalar si no está instalado y es instalable (o es iOS)
+  const showInstallButton = !isInstalled && !isStandalone && (isInstallable || isIOS);
   
   return (
     <>
@@ -277,6 +285,31 @@ export const MainMenu = memo(({
           color: rgba(255,255,255,0.9);
         }
         
+        .install-btn {
+          width: 100%;
+          padding: 14px;
+          margin-top: 16px;
+          border-radius: 50px;
+          border: 2px solid #4ade80;
+          background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.3) 100%);
+          color: #4ade80;
+          font-family: inherit;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          transition: all 0.2s;
+        }
+        
+        .install-btn:hover {
+          background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(22, 163, 74, 0.4) 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 20px rgba(74, 222, 128, 0.3);
+        }
+        
         /* Levels Preview Card */
         .levels-preview {
           position: relative;
@@ -397,6 +430,17 @@ export const MainMenu = memo(({
             </button>
           </div>
           
+          {/* Botón Instalar - solo si no está instalado */}
+          {showInstallButton && (
+            <button 
+              onClick={() => setShowInstallPrompt(true)} 
+              className="install-btn"
+            >
+              <Download size={20} />
+              Instalar App
+            </button>
+          )}
+          
           <div className="bottom-buttons">
             <button onClick={onLogout} className="bottom-btn">
               <LogOut size={16} />
@@ -418,6 +462,16 @@ export const MainMenu = memo(({
           </div>
         </div>
       </div>
+      
+      {/* Install Prompt Modal */}
+      {showInstallPrompt && (
+        <InstallPrompt
+          isIOS={isIOS}
+          isAndroid={isAndroid}
+          onInstall={install}
+          onClose={() => setShowInstallPrompt(false)}
+        />
+      )}
     </>
   );
 });

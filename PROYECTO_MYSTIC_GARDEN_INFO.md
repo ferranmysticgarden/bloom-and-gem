@@ -5,7 +5,7 @@
 |-------|-------|
 | Nombre | Mystic Garden |
 | App ID | com.mysticgarden.game |
-| Versión actual | 3.2.2 (versionCode 322) |
+| Versión actual | 3.3.0 (versionCode 330) |
 | Plataformas | Android, iOS, Web |
 
 ---
@@ -62,8 +62,8 @@ storeFile=mysticgarden-release.jks
 ```gradle
 defaultConfig {
     applicationId "com.mysticgarden.game"
-    versionCode 322
-    versionName "3.2.2"
+    versionCode 330
+    versionName "3.3.0"
 }
 ```
 
@@ -123,22 +123,44 @@ El script `GENERAR-AAB.bat` hace todo automáticamente:
 ---
 
 ## 📱 iOS (requiere Mac con Xcode)
-```cmd
+
+### Pasos en Mac:
+```bash
 npm install
 npm run build
-npx cap add ios       (solo la primera vez)
+npx cap add ios       # solo la primera vez
 npx cap sync ios
 npx cap open ios
 ```
 
-En Xcode:
-- Signing: selecciona tu Apple Developer Team
-- Product > Archive
-- Distribute App > App Store Connect
+### En Xcode (IMPORTANTE):
+1. Selecciona el target "App"
+2. **Signing & Capabilities:**
+   - Team: tu Apple Developer Team
+   - Bundle Identifier: com.mysticgarden.game
+   - Signing Certificate: Distribution
+3. **Build Settings:**
+   - iOS Deployment Target: 13.0
 
-**Requisitos:**
-- Mac con macOS y Xcode instalado
+### Para subir a App Store:
+1. Product > Archive
+2. Window > Organizer
+3. Distribute App > App Store Connect
+4. Upload
+
+### Requisitos:
+- Mac con macOS 12+ y Xcode 14+
 - Apple Developer Account ($99/año)
+- Certificado de distribución configurado
+- App Store Connect: crear app con Bundle ID
+
+### Solución Errores Comunes:
+| Error | Solución |
+|-------|----------|
+| "No signing certificate" | Xcode > Preferences > Accounts > Manage Certificates |
+| "Provisioning profile" | Automatic signing o crear en developer.apple.com |
+| Build failed | Clean Build Folder (Cmd+Shift+K) |
+| Code signing error | Verificar Team y Bundle ID en Signing & Capabilities |
 
 ---
 
@@ -173,8 +195,8 @@ En Xcode:
 
 Para subir una nueva versión:
 1. Editar `build-files/build.gradle`:
-   - Incrementar `versionCode` (ej: 322 → 323)
-   - Incrementar `versionName` (ej: "3.2.2" → "3.2.3")
+   - Incrementar `versionCode` (ej: 330 → 331)
+   - Incrementar `versionName` (ej: "3.3.0" → "3.3.1")
 2. Actualizar el header en `GENERAR-AAB.bat` con la nueva versión
 3. Ejecutar `GENERAR-AAB.bat`
 4. Subir el AAB a Google Play Console
