@@ -176,7 +176,7 @@
   
   .floating-particle {
     @apply absolute rounded-full pointer-events-none;
-    animation: float-particle 8s ease-in-out infinite;
+    opacity: 0.5;
   }
 }
 
@@ -202,25 +202,6 @@
   50% { 
     opacity: 1;
     transform: scale(1) rotate(180deg);
-  }
-}
-
-@keyframes float-particle {
-  0%, 100% { 
-    transform: translateY(0) translateX(0) rotate(0deg);
-    opacity: 0.3;
-  }
-  25% { 
-    transform: translateY(-20px) translateX(10px) rotate(90deg);
-    opacity: 0.7;
-  }
-  50% { 
-    transform: translateY(-10px) translateX(-5px) rotate(180deg);
-    opacity: 0.5;
-  }
-  75% { 
-    transform: translateY(-30px) translateX(15px) rotate(270deg);
-    opacity: 0.8;
   }
 }
 

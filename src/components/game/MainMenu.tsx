@@ -78,12 +78,7 @@ export const MainMenu = memo(({
           pointer-events: none;
           background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,215,0,0.6));
           box-shadow: 0 0 10px rgba(255,215,0,0.5);
-          animation: float-particle 8s ease-in-out infinite;
-        }
-        
-        @keyframes float-particle {
-          0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
-          50% { transform: translateY(-30px) translateX(10px); opacity: 1; }
+          opacity: 0.5;
         }
         
         /* Stats Bar */
@@ -339,8 +334,8 @@ export const MainMenu = memo(({
         {/* Overlay */}
         <div className="menu-overlay" />
         
-        {/* Floating particles - using pre-generated values */}
-        {particles.map((p) => (
+        {/* Static particles - no animation to prevent trembling */}
+        {particles.slice(0, 10).map((p) => (
           <div
             key={p.id}
             className="menu-particle"
@@ -349,8 +344,6 @@ export const MainMenu = memo(({
               height: p.height,
               left: `${p.left}%`,
               top: `${p.top}%`,
-              animationDelay: `${p.delay}s`,
-              animationDuration: `${p.duration}s`,
             }}
           />
         ))}
