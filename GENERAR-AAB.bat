@@ -51,9 +51,11 @@ echo    ANDROID COMPLETADO!
 echo ========================================
 echo.
 echo AAB generado en:
-echo android\app\build\outputs\bundle\release\
+echo C:\Users\PC\bloom-and-gem\android\app\build\outputs\bundle\release\
 echo.
-explorer app\build\outputs\bundle\release
+
+REM Abrir carpeta automaticamente con ruta absoluta
+start "" explorer "C:\Users\PC\bloom-and-gem\android\app\build\outputs\bundle\release"
 
 cd ..
 
