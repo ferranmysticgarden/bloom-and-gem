@@ -4,11 +4,9 @@ import mysticForestBg from '@/assets/mystic-forest-bg.jpg';
 
 interface MainMenuProps {
   lives: number;
-  maxLives: number;
   gems: number;
   unlockedLevels: number;
   totalScore: number;
-  streak: number;
   userEmail?: string;
   onPlay: () => void;
   onLevelSelect: () => void;
