@@ -5,7 +5,7 @@
 |-------|-------|
 | Nombre | Mystic Garden |
 | App ID | com.mysticgarden.game |
-| Versión actual | 3.0.7 (versionCode 307) |
+| Versión actual | 3.1.0 (versionCode 310) |
 | Plataformas | Android, iOS, Web |
 
 ---
