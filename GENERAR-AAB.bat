@@ -3,6 +3,7 @@ chcp 65001 >nul
 echo.
 echo ========================================
 echo    MYSTIC GARDEN - BUILD COMPLETO
+echo    Version 3.0.6
 echo ========================================
 echo.
 
@@ -42,6 +43,9 @@ echo.
 echo ========================================
 echo    ANDROID COMPLETADO!
 echo ========================================
+echo.
+echo AAB generado en:
+echo android\app\build\outputs\bundle\release\
 echo.
 explorer app\build\outputs\bundle\release
 
