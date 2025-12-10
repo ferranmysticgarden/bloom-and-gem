@@ -3,11 +3,11 @@ chcp 65001 >nul
 echo.
 echo ========================================
 echo    MYSTIC GARDEN - BUILD COMPLETO
-echo    Version 3.2.0
+echo    Version 3.2.1
 echo ========================================
 echo.
 
-cd /d C:\Users\PC\bloom-and-gem
+cd /d "C:\Users\PC\bloom-and-gem"
 
 echo [1/6] Git stash y pull...
 git stash
@@ -54,15 +54,32 @@ echo AAB generado en:
 echo C:\Users\PC\bloom-and-gem\android\app\build\outputs\bundle\release\
 echo.
 
-REM Abrir carpeta automaticamente con ruta absoluta
 start "" explorer "C:\Users\PC\bloom-and-gem\android\app\build\outputs\bundle\release"
 
 cd ..
 
 echo.
 echo ========================================
-echo    PARA iOS (ejecutar en Mac):
-echo    npx cap sync ios
-echo    npx cap open ios
+echo    PARA iOS (REQUIERE MAC CON XCODE):
+echo ========================================
+echo.
+echo    1. Copia el proyecto a un Mac
+echo    2. Abre Terminal en la carpeta del proyecto
+echo    3. Ejecuta estos comandos:
+echo.
+echo       npm install
+echo       npm run build
+echo       npx cap add ios       (solo la primera vez)
+echo       npx cap sync ios
+echo       npx cap open ios
+echo.
+echo    4. En Xcode:
+echo       - Signing: selecciona tu Apple Developer Team
+echo       - Product ^> Archive
+echo       - Distribute App ^> App Store Connect
+echo.
+echo    REQUISITOS:
+echo    - Mac con macOS y Xcode instalado
+echo    - Apple Developer Account ($99/ano)
 echo ========================================
 pause
