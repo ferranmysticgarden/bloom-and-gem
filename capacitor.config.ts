@@ -10,7 +10,7 @@ const config: CapacitorConfig = {
   },
   android: {
     buildOptions: {
-      keystorePath: 'mysticgarden-release.jks',
+      keystorePath: 'mystic-garden-key.jks',
       keystoreAlias: 'mysticgarden',
     }
   },
