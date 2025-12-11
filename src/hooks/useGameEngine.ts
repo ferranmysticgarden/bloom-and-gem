@@ -457,7 +457,7 @@ export const useGameEngine = () => {
     }
     
     return board;
-  }, []);
+  }
 
   const startLevel = useCallback((level: number) => {
     const safeLevel = Math.max(1, level || 1);
