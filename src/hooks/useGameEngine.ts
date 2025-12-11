@@ -251,6 +251,200 @@ export const useGameEngine = () => {
       
       isProcessingRef.current = true;
       
+      setTimeout(() => {
+        setGameState(current => {
+          let updatedBoard = removeMatches(current.board, matches);
+          updatedBoard = applyGravity(updatedBoard, current.level);
+          
+          const newMatches = findMatches(updatedBoard);
+          if (newMatches.length > 0) {
+            setTimeout(() => processMatchesRecursive(updatedBoard, current.level, current.combo + 1), 300);
+          } else {
+            isProcessingRef.current = false;
+          }
+          
+          return {
+            ...current,
+            board: updatedBoard,
+            score: current.score + matches.length * 10 * (current.combo + 1),
+            moves: current.moves - 1,
+            combo: newMatches.length > 0 ? current.combo + 1 : 0,
+            selectedGem: null,
+          };
+        });
+      }, 300);
+      
+      return {
+        ...prev,
+        board: newBoard,
+        selectedGem: null,
+      };
+    });
+  }, [findMatches, removeMatches, applyGravity]);
+
+  const processMatchesRecursive = useCallback((board: (Gem | null)[][], level: number, combo: number) => {
+    const matches = findMatches(board);
+    
+    if (matches.length === 0) {
+      isProcessingRef.current = false;
+      return;
+    }
+    
+    setGameState(current => {
+      let updatedBoard = removeMatches(board, matches);
+      updatedBoard = applyGravity(updatedBoard, level);
+      
+      setTimeout(() => processMatchesRecursive(updatedBoard, level, combo + 1), 300);
+      
+      return {
+        ...current,
+        board: updatedBoard,
+        score: current.score + matches.length * 10 * combo,
+        combo,
+      };
+    });
+  }, [findMatches, removeMatches, applyGravity]);
+
+  const handleGemClick = useCallback((position: Position) => {
+    if (isProcessingRef.current) return;
+    
+    setGameState(prev => {
+      if (!prev.isPlaying || prev.moves <= 0) return prev;
+      
+      if (!prev.selectedGem) {
+        return { ...prev, selectedGem: position };
+      }
+      
+      const isAdjacent = 
+        (Math.abs(prev.selectedGem.row - position.row) === 1 && prev.selectedGem.col === position.col) ||
+        (Math.abs(prev.selectedGem.col - position.col) === 1 && prev.selectedGem.row === position.row);
+      
+      if (isAdjacent) {
+        swapGems(prev.selectedGem, position);
+        return { ...prev, selectedGem: null };
+      }
+      
+      return { ...prev, selectedGem: position };
+    });
+  }, [swapGems]);
+
+  const useBomb = useCallback((position: Position) => {
+    setGameState(prev => {
+      if (prev.boosters.bomb <= 0) return prev;
+      
+      const newBoard = prev.board.map(row => [...row]);
+      const matches: Position[] = [];
+      
+      for (let row = Math.max(0, position.row - 1); row <= Math.min(newBoard.length - 1, position.row + 1); row++) {
+        for (let col = Math.max(0, position.col - 1); col <= Math.min(newBoard[0].length - 1, position.col + 1); col++) {
+          if (newBoard[row]?.[col]) {
+            matches.push({ row, col });
+          }
+        }
+      }
+      
+      const updatedBoard = removeMatches(newBoard, matches);
+      const finalBoard = applyGravity(updatedBoard, prev.level);
+      
+      saveProgress({
+        ...progress,
+        bombs: progress.bombs - 1,
+      });
+      
+      return {
+        ...prev,
+        board: finalBoard,
+        score: prev.score + matches.length * 20,
+        boosters: { ...prev.boosters, bomb: prev.boosters.bomb - 1 },
+      };
+    });
+  }, [removeMatches, applyGravity, progress, saveProgress]);
+
+  const useHammer = useCallback((position: Position) => {
+    setGameState(prev => {
+      if (prev.boosters.hammer <= 0) return prev;
+      
+      const newBoard = prev.board.map(row => [...row]);
+      const matches: Position[] = [position];
+      
+      const updatedBoard = removeMatches(newBoard, matches);
+      const finalBoard = applyGravity(updatedBoard, prev.level);
+      
+      saveProgress({
+        ...progress,
+        hammers: progress.hammers - 1,
+      });
+      
+      return {
+        ...prev,
+        board: finalBoard,
+        score: prev.score + 10,
+        boosters: { ...prev.boosters, hammer: prev.boosters.hammer - 1 },
+      };
+    });
+  }, [removeMatches, applyGravity, progress, saveProgress]);
+
+  const shuffleBoard = useCallback(() => {
+    setGameState(prev => {
+      if (prev.boosters.shuffle <= 0) return prev;
+      
+      const newBoard = initializeBoard(prev.level);
+      
+      return {
+        ...prev,
+        board: newBoard,
+        boosters: { ...prev.boosters, shuffle: prev.boosters.shuffle - 1 },
+        selectedGem: null,
+      };
+    });
+  }, [initializeBoard]);
+
+  const resetLevel = useCallback(() => {
+    startLevel(gameState.level);
+  }, [gameState.level, startLevel]);
+
+  const nextLevel = useCallback(() => {
+    const nextLevelNum = gameState.level + 1;
+    if (nextLevelNum <= gameState.unlockedLevels) {
+      startLevel(nextLevelNum);
+    }
+  }, [gameState.level, gameState.unlockedLevels, startLevel]);
+
+  useEffect(() => {
+    if (gameState.isPlaying && gameState.moves === 0) {
+      const hasWon = gameState.score >= gameState.targetScore;
+      
+      if (hasWon && gameState.level === gameState.unlockedLevels) {
+        const newUnlockedLevels = Math.min(gameState.level + 1, LEVELS.length);
+        saveProgress({
+          ...progress,
+          unlockedLevels: newUnlockedLevels,
+        });
+        
+        setGameState(prev => ({
+          ...prev,
+          unlockedLevels: newUnlockedLevels,
+        }));
+      }
+      
+      setGameState(prev => ({ ...prev, isPlaying: false }));
+    }
+  }, [gameState.moves, gameState.isPlaying, gameState.score, gameState.targetScore, gameState.level, gameState.unlockedLevels, progress, saveProgress]);
+
+  return {
+    gameState,
+    startLevel,
+    handleGemClick,
+    useBomb,
+    useHammer,
+    shuffleBoard,
+    resetLevel,
+    nextLevel,
+    loading,
+  };
+};      
+      isProcessingRef.current = true;
+      
       return {
         ...prev,
         board: newBoard,
