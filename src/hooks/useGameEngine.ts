@@ -227,6 +227,219 @@ export const useGameEngine = () => {
 
   const swapGems = useCallback((pos1: Position, pos2: Position) => {
     if (isProcessingRef.current) {
+      console.log('Swap blocked');
+      return;
+    }
+    
+    setGameState(prev => {
+      if (!prev.isPlaying || prev.moves <= 0) return prev;
+      
+      const newBoard = prev.board.map(row => [...row]);
+      const gem1 = newBoard[pos1.row]?.[pos1.col];
+      const gem2 = newBoard[pos2.row]?.[pos2.col];
+      
+      if (!gem1 || !gem2) return prev;
+      
+      newBoard[pos1.row][pos1.col] = { ...gem2, row: pos1.row, col: pos1.col };
+      newBoard[pos2.row][pos2.col] = { ...gem1, row: pos2.row, col: pos2.col };
+      
+      const matches = findMatches(newBoard);
+      
+      if (matches.length === 0) {
+        return { ...prev, selectedGem: null };
+      }
+      
+      isProcessingRef.current = true;
+      
+      return {
+        ...prev,
+        board: newBoard,
+        moves: prev.moves - 1,
+        selectedGem: null,
+      };
+    });
+  }, [findMatches]);
+
+  const selectGem = useCallback((pos: Position) => {
+    setGameState(prev => {
+      if (!prev.isPlaying) return prev;
+      
+      if (!prev.selectedGem) {
+        return { ...prev, selectedGem: pos };
+      }
+      
+      if (prev.selectedGem.row === pos.row && prev.selectedGem.col === pos.col) {
+        return { ...prev, selectedGem: null };
+      }
+      
+      return { ...prev, selectedGem: pos };
+    });
+  }, []);
+
+  const processMatches = useCallback(() => {
+    setGameState(prev => {
+      if (!prev.isPlaying || prev.board.length === 0) {
+        isProcessingRef.current = false;
+        return prev;
+      }
+      
+      const matches = findMatches(prev.board);
+      
+      if (matches.length === 0) {
+        isProcessingRef.current = false;
+        
+        if (prev.score >= prev.targetScore) {
+          const newUnlockedLevels = Math.max(prev.unlockedLevels, prev.level + 1);
+          const newGems = prev.gems + Math.floor(prev.score / 100);
+          
+          return {
+            ...prev,
+            isPlaying: false,
+            unlockedLevels: newUnlockedLevels,
+            totalScore: prev.totalScore + prev.score,
+            gems: newGems,
+            combo: 0,
+          };
+        }
+        
+        if (prev.moves <= 0) {        while (
+          attempts < 10 &&
+          ((col >= 2 && board[row][col - 1]?.type === gem.type && board[row][col - 2]?.type === gem.type) ||
+          (row >= 2 && board[row - 1]?.[col]?.type === gem.type && board[row - 2]?.[col]?.type === gem.type))
+        ) {
+          gem = createGem(row, col, config.gemTypes || 4, 0);
+          attempts++;
+        }
+        
+        board[row][col] = gem;
+      }
+    }
+    
+    return board;
+  }, []);
+
+  const startLevel = useCallback((level: number) => {
+    const safeLevel = Math.max(1, level || 1);
+    const levelIndex = Math.min(safeLevel - 1, LEVELS.length - 1);
+    const config = LEVELS[levelIndex] || LEVELS[0];
+    
+    if (!config) {
+      console.error('No level config found');
+      return;
+    }
+    
+    const board = initializeBoard(safeLevel);
+    
+    if (!board || board.length === 0) {
+      console.error('Failed to initialize board');
+      return;
+    }
+    
+    isProcessingRef.current = false;
+    
+    setGameState(prev => ({
+      ...prev,
+      board,
+      score: 0,
+      moves: config.moves || 20,
+      targetScore: config.targetScore || 500,
+      level: safeLevel,
+      isPlaying: true,
+      selectedGem: null,
+      combo: 0,
+    }));
+  }, [initializeBoard]);
+
+  const findMatches = useCallback((board: (Gem | null)[][]): Position[] => {
+    const matches: Position[] = [];
+    const size = board.length;
+    
+    if (size === 0) return matches;
+    
+    for (let row = 0; row < size; row++) {
+      if (!board[row]) continue;
+      for (let col = 0; col < size - 2; col++) {
+        const gem = board[row][col];
+        if (gem && board[row][col + 1]?.type === gem.type && board[row][col + 2]?.type === gem.type) {
+          let matchLength = 3;
+          while (col + matchLength < size && board[row][col + matchLength]?.type === gem.type) {
+            matchLength++;
+          }
+          for (let i = 0; i < matchLength; i++) {
+            if (!matches.find(m => m.row === row && m.col === col + i)) {
+              matches.push({ row, col: col + i });
+            }
+          }
+        }
+      }
+    }
+    
+    for (let col = 0; col < size; col++) {
+      for (let row = 0; row < size - 2; row++) {
+        if (!board[row]) continue;
+        const gem = board[row][col];
+        if (gem && board[row + 1]?.[col]?.type === gem.type && board[row + 2]?.[col]?.type === gem.type) {
+          let matchLength = 3;
+          while (row + matchLength < size && board[row + matchLength]?.[col]?.type === gem.type) {
+            matchLength++;
+          }
+          for (let i = 0; i < matchLength; i++) {
+            if (!matches.find(m => m.row === row + i && m.col === col)) {
+              matches.push({ row: row + i, col });
+            }
+          }
+        }
+      }
+    }
+    
+    return matches;
+  }, []);
+
+  const removeMatches = useCallback((board: (Gem | null)[][], matches: Position[]): (Gem | null)[][] => {
+    const newBoard = board.map(row => [...row]);
+    matches.forEach(({ row, col }) => {
+      if (newBoard[row]) {
+        newBoard[row][col] = null;
+      }
+    });
+    return newBoard;
+  }, []);
+
+  const applyGravity = useCallback((board: (Gem | null)[][], level: number): (Gem | null)[][] => {
+    const safeLevel = Math.max(1, level || 1);
+    const levelIndex = Math.min(safeLevel - 1, LEVELS.length - 1);
+    const config = LEVELS[levelIndex] || LEVELS[0];
+    const size = board.length;
+    
+    if (size === 0) return board;
+    
+    const newBoard = board.map(row => [...row]);
+    
+    for (let col = 0; col < size; col++) {
+      let emptyRow = size - 1;
+      
+      for (let row = size - 1; row >= 0; row--) {
+        if (newBoard[row] && newBoard[row][col] !== null) {
+          if (row !== emptyRow && newBoard[emptyRow]) {
+            newBoard[emptyRow][col] = { ...newBoard[row][col]!, row: emptyRow, isFalling: true };
+            newBoard[row][col] = null;
+          }
+          emptyRow--;
+        }
+      }
+      
+      for (let row = emptyRow; row >= 0; row--) {
+        if (newBoard[row]) {
+          newBoard[row][col] = createGem(row, col, config?.gemTypes || 4, config?.specialChance || 0);
+        }
+      }
+    }
+    
+    return newBoard;
+  }, []);
+
+  const swapGems = useCallback((pos1: Position, pos2: Position) => {
+    if (isProcessingRef.current) {
       console.log('Swap blocked: processing');
       return;
     }
