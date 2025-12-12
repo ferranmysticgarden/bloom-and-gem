@@ -414,37 +414,4 @@ export const useGameEngine = () => {
     shuffleBoard,
     loading,
   };
-};    saveProgress({ hammers: gameState.boosters.hammer - 1 });
-    
-    setTimeout(() => {
-      processMatchesAndCascade(filledBoard, gameState.score + 10, 0, gameState.level);
-    }, 200);
-  }, [gameState, saveProgress, processMatchesAndCascade]);
-
-  const shuffleBoard = useCallback(() => {
-    if (!gameState.isPlaying || gameState.boosters.shuffle <= 0 || isProcessingRef.current) return;
-    
-    const levelConfig = LEVELS[gameState.level - 1] || LEVELS[0];
-    const newBoard = createBoard(levelConfig.gridSize, levelConfig.gemTypes);
-    
-    setGameState(prev => ({
-      ...prev,
-      board: newBoard,
-      boosters: { ...prev.boosters, shuffle: prev.boosters.shuffle - 1 },
-    }));
-    
-    saveProgress({ shuffles: gameState.boosters.shuffle - 1 });
-  }, [gameState.isPlaying, gameState.boosters.shuffle, gameState.level, saveProgress]);
-
-  return {
-    gameState,
-    setGameState,
-    startLevel,
-    selectGem,
-    swapGems,
-    useBomb,
-    useHammer,
-    shuffleBoard,
-    loading,
-  };
-};
+};   
