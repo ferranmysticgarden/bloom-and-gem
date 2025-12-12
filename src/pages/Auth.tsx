@@ -102,6 +102,37 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast({
+        title: 'Email requerido',
+        description: 'Introduce tu email para recuperar la contraseña',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+      if (error) throw error;
+      toast({ 
+        title: '¡Email enviado! 📧', 
+        description: 'Revisa tu correo para restablecer la contraseña' 
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Decorative elements
   const decorations = [
     { emoji: '🍄', left: '5%', bottom: '10%', size: 45 },
@@ -350,6 +381,23 @@ const Auth = () => {
           color: #FFA500;
         }
         
+        .forgot-password-link {
+          background: none;
+          border: none;
+          color: rgba(255, 215, 0, 0.8);
+          font-size: 0.85rem;
+          cursor: pointer;
+          text-decoration: underline;
+          font-family: inherit;
+          padding: 0;
+          margin-top: -5px;
+          align-self: flex-end;
+        }
+        
+        .forgot-password-link:hover {
+          color: #FFD700;
+        }
+        
         @keyframes float-up {
           0% {
             transform: translateY(0) translateX(0);
@@ -455,6 +503,15 @@ const Auth = () => {
               minLength={6}
               className="auth-input"
             />
+            {isLogin && (
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="forgot-password-link"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            )}
             <button
               type="submit"
               disabled={loading}
