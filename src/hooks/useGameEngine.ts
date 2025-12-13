@@ -197,38 +197,19 @@ export const useGameEngine = () => {
   }, []);
 
   const processMatchesAndCascade = useCallback((board: (Gem | null)[][], currentScore: number, currentCombo: number, level: number): void => {
-    // Don't process if already processing or game ended
+    // Don't process if already processing
     if (isProcessingRef.current) return;
     
     const levelConfig = LEVELS[level - 1] || LEVELS[0];
     const gemTypes = levelConfig.gemTypes;
     const targetScore = levelConfig.targetScore;
     
-    // Check if already won BEFORE processing more matches
-    if (currentScore >= targetScore) {
-      setGameState(prev => {
-        if (prev.isPlaying) {
-          // Game won - unlock next level and give rewards
-          if (prev.level >= prev.unlockedLevels) {
-            const newUnlockedLevels = Math.min(prev.level + 1, 100);
-            saveProgress({ 
-              unlockedLevels: newUnlockedLevels,
-              gems: prev.gems + Math.floor(currentScore / 100),
-            });
-          }
-          return { ...prev, score: currentScore, isPlaying: false, combo: 0 };
-        }
-        return prev;
-      });
-      return;
-    }
-    
     const matches = findMatches(board);
     
     if (matches.length > 0) {
       isProcessingRef.current = true;
       
-      // Mark matched gems
+      // Marcar gemas que hacen match
       const markedBoard = board.map(row => row.map(gem => {
         if (gem && matches.some(m => m.row === gem.row && m.col === gem.col)) {
           return { ...gem, isMatched: true };
@@ -237,12 +218,11 @@ export const useGameEngine = () => {
       }));
       
       setGameState(prev => {
-        // Don't update if game already ended
         if (!prev.isPlaying) return prev;
         return { ...prev, board: markedBoard };
       });
       
-      // Remove matched gems and apply gravity after animation
+      // Eliminar gemas y aplicar gravedad tras la animación
       cascadeTimeoutRef.current = setTimeout(() => {
         const clearedBoard = markedBoard.map(row => 
           row.map(gem => (gem?.isMatched ? null : gem))
@@ -254,7 +234,6 @@ export const useGameEngine = () => {
         const newCombo = currentCombo + 1;
         
         setGameState(prev => {
-          // Don't update if game already ended
           if (!prev.isPlaying) return prev;
           return {
             ...prev,
@@ -266,41 +245,41 @@ export const useGameEngine = () => {
         
         isProcessingRef.current = false;
         
-        // Check if won after this cascade
+        // Comprobar victoria tras esta cascada
         if (newScore >= targetScore) {
           setGameState(prev => {
-            if (prev.isPlaying) {
-              if (prev.level >= prev.unlockedLevels) {
-                const newUnlockedLevels = Math.min(prev.level + 1, 100);
-                saveProgress({ 
-                  unlockedLevels: newUnlockedLevels,
-                  gems: prev.gems + Math.floor(newScore / 100),
-                });
-              }
-              return { ...prev, score: newScore, isPlaying: false, combo: 0 };
+            if (!prev.isPlaying) return prev;
+            
+            if (prev.level >= prev.unlockedLevels) {
+              const newUnlockedLevels = Math.min(prev.level + 1, 100);
+              saveProgress({
+                unlockedLevels: newUnlockedLevels,
+                gems: prev.gems + Math.floor(newScore / 100),
+              });
             }
-            return prev;
+            
+            return { ...prev, score: newScore, isPlaying: false, combo: 0 };
           });
           return;
         }
         
-        // Check for more matches (cascade)
+        // Buscar más matches (cascada)
         cascadeTimeoutRef.current = setTimeout(() => {
           processMatchesAndCascade(newBoard, newScore, newCombo, level);
         }, 150);
       }, 200);
     } else {
-      // No more matches - check lose condition (only if out of moves)
+      // Sin más matches: solo perder si no quedan movimientos
       setGameState(prev => {
         if (!prev.isPlaying) return prev;
         
         if (prev.moves <= 0 && prev.score < prev.targetScore) {
-          // Game lost
           if (prev.lives > 0) {
             saveProgress({ lives: prev.lives - 1 });
           }
           return { ...prev, isPlaying: false, combo: 0 };
         }
+        
         return { ...prev, combo: 0 };
       });
     }
