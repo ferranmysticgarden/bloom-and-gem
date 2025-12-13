@@ -197,10 +197,31 @@ export const useGameEngine = () => {
   }, []);
 
   const processMatchesAndCascade = useCallback((board: (Gem | null)[][], currentScore: number, currentCombo: number, level: number): void => {
+    // Don't process if already processing or game ended
     if (isProcessingRef.current) return;
     
     const levelConfig = LEVELS[level - 1] || LEVELS[0];
     const gemTypes = levelConfig.gemTypes;
+    const targetScore = levelConfig.targetScore;
+    
+    // Check if already won BEFORE processing more matches
+    if (currentScore >= targetScore) {
+      setGameState(prev => {
+        if (prev.isPlaying) {
+          // Game won - unlock next level and give rewards
+          if (prev.level >= prev.unlockedLevels) {
+            const newUnlockedLevels = Math.min(prev.level + 1, 100);
+            saveProgress({ 
+              unlockedLevels: newUnlockedLevels,
+              gems: prev.gems + Math.floor(currentScore / 100),
+            });
+          }
+          return { ...prev, score: currentScore, isPlaying: false, combo: 0 };
+        }
+        return prev;
+      });
+      return;
+    }
     
     const matches = findMatches(board);
     
@@ -215,7 +236,11 @@ export const useGameEngine = () => {
         return gem;
       }));
       
-      setGameState(prev => ({ ...prev, board: markedBoard }));
+      setGameState(prev => {
+        // Don't update if game already ended
+        if (!prev.isPlaying) return prev;
+        return { ...prev, board: markedBoard };
+      });
       
       // Remove matched gems and apply gravity after animation
       cascadeTimeoutRef.current = setTimeout(() => {
@@ -228,14 +253,36 @@ export const useGameEngine = () => {
         const newScore = currentScore + points;
         const newCombo = currentCombo + 1;
         
-        setGameState(prev => ({
-          ...prev,
-          board: newBoard,
-          score: newScore,
-          combo: newCombo,
-        }));
+        setGameState(prev => {
+          // Don't update if game already ended
+          if (!prev.isPlaying) return prev;
+          return {
+            ...prev,
+            board: newBoard,
+            score: newScore,
+            combo: newCombo,
+          };
+        });
         
         isProcessingRef.current = false;
+        
+        // Check if won after this cascade
+        if (newScore >= targetScore) {
+          setGameState(prev => {
+            if (prev.isPlaying) {
+              if (prev.level >= prev.unlockedLevels) {
+                const newUnlockedLevels = Math.min(prev.level + 1, 100);
+                saveProgress({ 
+                  unlockedLevels: newUnlockedLevels,
+                  gems: prev.gems + Math.floor(newScore / 100),
+                });
+              }
+              return { ...prev, score: newScore, isPlaying: false, combo: 0 };
+            }
+            return prev;
+          });
+          return;
+        }
         
         // Check for more matches (cascade)
         cascadeTimeoutRef.current = setTimeout(() => {
@@ -243,21 +290,15 @@ export const useGameEngine = () => {
         }, 150);
       }, 200);
     } else {
-      // No more matches - check win/lose condition
+      // No more matches - check lose condition (only if out of moves)
       setGameState(prev => {
-        if (prev.moves <= 0 || prev.score >= prev.targetScore) {
-          const won = prev.score >= prev.targetScore;
-          
-          if (won && prev.level >= prev.unlockedLevels) {
-            const newUnlockedLevels = Math.min(prev.level + 1, 100);
-            saveProgress({ 
-              unlockedLevels: newUnlockedLevels,
-              gems: prev.gems + Math.floor(prev.score / 100),
-            });
-          } else if (!won && prev.lives > 0) {
+        if (!prev.isPlaying) return prev;
+        
+        if (prev.moves <= 0 && prev.score < prev.targetScore) {
+          // Game lost
+          if (prev.lives > 0) {
             saveProgress({ lives: prev.lives - 1 });
           }
-          
           return { ...prev, isPlaying: false, combo: 0 };
         }
         return { ...prev, combo: 0 };
