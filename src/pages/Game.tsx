@@ -407,7 +407,7 @@ const Game = () => {
   );
 };
 
-export default Game;  }, [navigate]);
+export default Game;
 
   const handlePlay = useCallback(() => {
     startLevel(gameState.unlockedLevels);
