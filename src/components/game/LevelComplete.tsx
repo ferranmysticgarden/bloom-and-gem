@@ -1,4 +1,4 @@
-import { memo, useEffect, useState, useMemo } from "react";
+const crystalCaveImg = "/fake.jpg";
 import { Star } from "lucide-react";
 
 // ✅ SVG seguro como fallback (nunca falla)
