@@ -14,8 +14,9 @@ android {
         applicationId "com.mysticgarden.game"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 336
-        versionName "3.3.6"
+        versionCode 339
+        versionName "10.0.3"
+
     }
     
     signingConfigs {
