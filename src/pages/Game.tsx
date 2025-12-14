@@ -122,6 +122,7 @@ const Game = () => {
   }, [navigate]);
 
   const handlePurchase = useCallback((itemId: string) => {
+    // Handle purchase logic here
     console.log('Purchasing:', itemId);
   }, []);
 
@@ -133,21 +134,14 @@ const Game = () => {
   if (loading) {
     return (
       <div 
+        className="min-h-screen min-h-[100dvh] flex items-center justify-center"
         style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
           backgroundImage: `url(${mysticForestBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       >
-        <div style={{ color: 'white', fontSize: '20px', fontFamily: "'Cinzel', serif" }}>Cargando...</div>
+        <div className="text-white text-xl font-cinzel animate-pulse">Cargando...</div>
       </div>
     );
   }
@@ -206,55 +200,38 @@ const Game = () => {
     );
   }
 
-  // Playing screen - PANTALLA COMPLETA
+  // Playing screen
   return (
     <div 
+      className="min-h-screen min-h-[100dvh] flex flex-col p-2 sm:p-4 relative overflow-hidden"
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
         backgroundImage: `url(${mysticForestBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        overflow: 'hidden',
       }}
     >
-      {/* Overlay - más claro para ver el fondo */}
-      <div 
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'linear-gradient(180deg, rgba(60, 20, 80, 0.3) 0%, rgba(20, 40, 60, 0.4) 100%)',
-          zIndex: 1,
-        }}
-      />
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/20" />
 
-      {/* Contenido principal - llena toda la pantalla */}
-      <div 
-        style={{
-          position: 'relative',
-          zIndex: 10,
-          display: 'flex',
-          flexDirection: 'column',
-          flex: 1,
-          padding: '160px 12px 12px 12px',
-          gap: '8px',
-          maxWidth: '420px',
-          margin: '0 auto',
-          width: '100%',
-          height: '100%',
-          boxSizing: 'border-box',
-        }}
-      >
+      {/* Floating particles - reduced for mobile performance */}
+      {Array.from({ length: 10 }).map((_, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full pointer-events-none z-0"
+          style={{
+            width: 3 + Math.random() * 4,
+            height: 3 + Math.random() * 4,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            background: `radial-gradient(circle, hsla(0, 0%, 100%, 0.9), hsla(45, 100%, 50%, 0.6))`,
+            boxShadow: '0 0 10px hsla(45, 100%, 50%, 0.5)',
+            animation: `float-particle ${6 + Math.random() * 6}s ease-in-out infinite`,
+            animationDelay: `${Math.random() * 8}s`,
+          }}
+        />
+      ))}
+
+      <div className="relative z-10 flex flex-col flex-1 max-w-lg mx-auto w-full">
         <GameHeader
           level={gameState.level}
           score={gameState.score}
@@ -304,56 +281,29 @@ const Game = () => {
 
       {/* Pause modal */}
       {screen === 'paused' && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 50,
-          }}
-        >
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
           <div 
+            className="p-8 text-center rounded-2xl"
             style={{
-              padding: '32px',
-              textAlign: 'center',
-              borderRadius: '16px',
               background: 'linear-gradient(135deg, rgba(60, 20, 80, 0.95) 0%, rgba(40, 15, 60, 0.95) 100%)',
               border: '2px solid rgba(255, 215, 0, 0.3)',
             }}
           >
-            <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '24px', marginBottom: '24px', color: 'white' }}>Pausado</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h2 className="font-cinzel text-2xl mb-6 text-white">Pausado</h2>
+            <div className="flex flex-col gap-3">
               <button
                 onClick={() => setScreen('playing')}
+                className="px-6 py-3 rounded-full font-semibold"
                 style={{
-                  padding: '12px 24px',
-                  borderRadius: '9999px',
-                  fontWeight: '600',
                   background: 'linear-gradient(135deg, #FFA500 0%, #FF8C00 100%)',
                   color: '#1a1a2e',
-                  border: 'none',
-                  cursor: 'pointer',
                 }}
               >
                 Continuar
               </button>
               <button
                 onClick={handleMainMenu}
-                style={{
-                  padding: '12px 24px',
-                  borderRadius: '9999px',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  background: 'transparent',
-                  color: 'white',
-                  cursor: 'pointer',
-                }}
+                className="px-6 py-3 rounded-full border border-white/30 hover:bg-white/10 text-white"
               >
                 Menú Principal
               </button>
@@ -361,6 +311,19 @@ const Game = () => {
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes float-particle {
+          0%, 100% {
+            transform: translateY(0) translateX(0);
+            opacity: 0.3;
+          }
+          50% {
+            transform: translateY(-30px) translateX(10px);
+            opacity: 1;
+          }
+        }
+      `}</style>
     </div>
   );
 };

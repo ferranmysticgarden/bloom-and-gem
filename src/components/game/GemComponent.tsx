@@ -17,49 +17,37 @@ export const GemComponent = memo(({ gem, isSelected, onClick, cellSize }: GemCom
     <div
       onClick={onClick}
       className={cn(
-        'w-full h-full flex items-center justify-center cursor-pointer transition-transform duration-200',
+        'gem-cell',
         gem.isNew && 'animate-gem-fall',
         gem.isMatched && 'animate-gem-match',
-        isSelected && 'scale-110',
       )}
-      style={{
-        fontSize: cellSize * 0.82,
+      style={{ 
+        width: cellSize, 
+        height: cellSize,
+        padding: 4,
       }}
     >
-      <span 
+      <div
         className={cn(
-          'transition-all duration-200',
-          isSelected && 'drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
+          'gem',
+          `gem-${gem.type}`,
+          isSelected && 'selected',
+          gem.special && 'ring-2 ring-white/50'
         )}
+        style={{
+          fontSize: cellSize * 0.5,
+        }}
       >
         {emoji}
-      </span>
-      
-      {/* Sparkle effect for special gems */}
-      {gem.special && (
-        <div className="absolute inset-0 pointer-events-none">
-          <span 
-            className="absolute text-xs"
-            style={{ 
-              top: '5%', 
-              left: '15%', 
-              animation: 'sparkle 2s ease-in-out infinite',
-            }}
-          >
-            ✨
-          </span>
-          <span 
-            className="absolute text-xs"
-            style={{ 
-              bottom: '10%', 
-              right: '10%', 
-              animation: 'sparkle 2s ease-in-out infinite 0.5s',
-            }}
-          >
-            ✨
-          </span>
-        </div>
-      )}
+        
+        {/* Sparkle effect for special gems */}
+        {gem.special && (
+          <>
+            <div className="sparkle" style={{ top: '10%', left: '20%', animationDelay: '0s' }}>✨</div>
+            <div className="sparkle" style={{ top: '70%', right: '15%', animationDelay: '0.5s' }}>✨</div>
+          </>
+        )}
+      </div>
     </div>
   );
 });
