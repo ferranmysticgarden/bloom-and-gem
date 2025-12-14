@@ -2,84 +2,38 @@
 chcp 65001 >nul
 echo.
 echo ========================================
-echo    MYSTIC GARDEN - BUILD COMPLETO
-echo    Version 3.3.1
+echo    GENERANDO AAB FIRMADO
 echo ========================================
 echo.
 
-cd /d "C:\Users\PC\bloom-and-gem"
+cd /d C:\Users\PC\bloom-and-gem
 
-echo [1/6] Git stash y pull...
-git stash
+echo [1/6] Git pull...
 git pull
 
-echo [2/6] Instalando dependencias...
-call npm install
-
-echo [3/6] Build...
+echo [2/6] Build...
 call npm run build
 
-echo [4/6] Sync Android...
+echo [3/6] Sync Android...
 call npx cap sync android
 
-echo [5/6] Copiando configuracion...
-copy /Y "C:\Users\PC\OneDrive\jks mystic\mysticgarden-release.jks" "android\app\mysticgarden-release.jks"
+echo [4/6] Copiando configuracion...
 copy /Y "build-files\build.gradle" "android\app\build.gradle"
 copy /Y "build-files\key.properties" "android\key.properties"
 
+echo [5/6] Creando keystore...
 cd android
-
-if exist "app\mysticgarden-release.jks" (
-    echo ========================================
-    echo    KEYSTORE ORIGINAL ENCONTRADO - OK
-    echo    SHA1: 8A:3F:9E:B2:85:AC:01:4F:74:AA:7D:7A:76:B8:05:79:A7:0F:3A:C5
-    echo ========================================
-) else (
-    echo ========================================
-    echo    ERROR: KEYSTORE NO ENCONTRADO
-    echo ========================================
-    pause
-    exit /b 1
-)
+if exist "app\mystic-garden-key.jks" del "app\mystic-garden-key.jks"
+keytool -genkey -v -keystore app\mystic-garden-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias mysticgarden -storepass mystic2025 -keypass mystic2025 -dname "CN=Mystic Garden, OU=Games, O=Evoluxe, L=Madrid, ST=Madrid, C=ES"
 
 echo [6/6] Generando AAB firmado...
-call gradlew.bat bundleRelease
+call gradlew bundleRelease
 
 echo.
 echo ========================================
-echo    ANDROID COMPLETADO!
+echo    COMPLETADO!
 echo ========================================
 echo.
-echo AAB generado en:
-echo C:\Users\PC\bloom-and-gem\android\app\build\outputs\bundle\release\
-echo.
-
-start "" explorer "C:\Users\PC\bloom-and-gem\android\app\build\outputs\bundle\release"
-
-cd ..
-
-echo.
-echo ========================================
-echo    PARA iOS (REQUIERE MAC CON XCODE):
-echo ========================================
-echo.
-echo    1. Copia el proyecto a un Mac
-echo    2. Abre Terminal en la carpeta del proyecto
-echo    3. Ejecuta estos comandos:
-echo.
-echo       npm install
-echo       npm run build
-echo       npx cap add ios       (solo la primera vez)
-echo       npx cap sync ios
-echo       npx cap open ios
-echo.
-echo    4. En Xcode:
-echo       - Signing: selecciona tu Apple Developer Team
-echo       - Product ^> Archive
-echo       - Distribute App ^> App Store Connect
-echo.
-echo    REQUISITOS:
-echo    - Mac con macOS y Xcode instalado
-echo    - Apple Developer Account ($99/ano)
-echo ========================================
+echo Tu AAB esta en:
+explorer app\build\outputs\bundle\release
 pause

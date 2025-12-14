@@ -45,21 +45,6 @@
 @layer base {
   * {
     @apply border-border;
-    -webkit-tap-highlight-color: transparent;
-  }
-  html, body, #root {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    /* iOS Safari fix for 100vh issue */
-    min-height: 100%;
-    min-height: -webkit-fill-available;
-    -webkit-overflow-scrolling: touch;
-    /* Prevent text selection on touch */
-    -webkit-user-select: none;
-    user-select: none;
   }
   body {
     @apply bg-background text-foreground font-quicksand;
@@ -67,8 +52,8 @@
       radial-gradient(ellipse at top, hsl(280 60% 15%) 0%, transparent 50%),
       radial-gradient(ellipse at bottom, hsl(200 60% 10%) 0%, transparent 50%),
       linear-gradient(180deg, hsl(270 50% 8%) 0%, hsl(250 50% 5%) 100%);
-    /* Safari backdrop-filter fix */
-    -webkit-backdrop-filter: none;
+    min-height: 100vh;
+    overflow-x: hidden;
   }
 }
 
@@ -176,7 +161,7 @@
   
   .floating-particle {
     @apply absolute rounded-full pointer-events-none;
-    opacity: 0.5;
+    animation: float-particle 8s ease-in-out infinite;
   }
 }
 
@@ -202,6 +187,25 @@
   50% { 
     opacity: 1;
     transform: scale(1) rotate(180deg);
+  }
+}
+
+@keyframes float-particle {
+  0%, 100% { 
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0.3;
+  }
+  25% { 
+    transform: translateY(-20px) translateX(10px) rotate(90deg);
+    opacity: 0.7;
+  }
+  50% { 
+    transform: translateY(-10px) translateX(-5px) rotate(180deg);
+    opacity: 0.5;
+  }
+  75% { 
+    transform: translateY(-30px) translateX(15px) rotate(270deg);
+    opacity: 0.8;
   }
 }
 

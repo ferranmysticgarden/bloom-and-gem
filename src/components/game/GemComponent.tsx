@@ -11,16 +11,7 @@ interface GemComponentProps {
 }
 
 export const GemComponent = memo(({ gem, isSelected, onClick, cellSize }: GemComponentProps) => {
-  // Fallback seguro para evitar gemas sin icono
-  const specialEmoji = gem.special ? SPECIAL_EMOJIS[gem.special] : null;
-  const gemEmoji = GEM_EMOJIS[gem.type] || '🌸'; // Fallback a cherry blossom
-  const emoji = specialEmoji || gemEmoji;
-  
-  // Si no hay emoji válido, no renderizar nada
-  if (!emoji) {
-    console.warn('GemComponent: No emoji found for gem', gem);
-    return null;
-  }
+  const emoji = gem.special ? SPECIAL_EMOJIS[gem.special] : GEM_EMOJIS[gem.type];
   
   return (
     <div

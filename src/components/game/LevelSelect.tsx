@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { Lock, Star, ArrowLeft, X } from 'lucide-react';
 import { LEVELS } from '@/config/levels';
 import mysticForestBg from '@/assets/mystic-forest-bg.jpg';
@@ -13,31 +13,10 @@ interface LevelSelectProps {
 export const LevelSelect = memo(({ unlockedLevels, onSelectLevel, onBack, onExit }: LevelSelectProps) => {
   const displayLevels = LEVELS.slice(0, 50);
   
-  // Pre-generate particle positions
-  const particles = useMemo(() => Array.from({ length: 20 }).map((_, i) => ({
-    id: i,
-    width: 3 + Math.random() * 5,
-    height: 3 + Math.random() * 5,
-    left: Math.random() * 100,
-    top: Math.random() * 100,
-    duration: 6 + Math.random() * 6,
-    delay: Math.random() * 8,
-  })), []);
-  
-  
   return (
     <div 
+      className="min-h-screen p-4 pb-20 relative"
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100%',
-        height: '100%',
-        padding: '16px',
-        paddingBottom: '80px',
-        overflow: 'auto',
         backgroundImage: `url(${mysticForestBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -145,22 +124,36 @@ export const LevelSelect = memo(({ unlockedLevels, onSelectLevel, onBack, onExit
         </div>
       </div>
 
-      {/* Static particles - no animation to prevent trembling */}
-      {particles.slice(0, 10).map((p) => (
+      {/* Floating particles */}
+      {Array.from({ length: 20 }).map((_, i) => (
         <div
-          key={p.id}
+          key={i}
           className="absolute rounded-full pointer-events-none z-0"
           style={{
-            width: p.width,
-            height: p.height,
-            left: `${p.left}%`,
-            top: `${p.top}%`,
+            width: 3 + Math.random() * 5,
+            height: 3 + Math.random() * 5,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
             background: `radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,215,0,0.6))`,
             boxShadow: '0 0 10px rgba(255,215,0,0.5)',
-            opacity: 0.5,
+            animation: `float-particle ${6 + Math.random() * 6}s ease-in-out infinite`,
+            animationDelay: `${Math.random() * 8}s`,
           }}
         />
       ))}
+
+      <style>{`
+        @keyframes float-particle {
+          0%, 100% {
+            transform: translateY(0) translateX(0);
+            opacity: 0.3;
+          }
+          50% {
+            transform: translateY(-30px) translateX(10px);
+            opacity: 1;
+          }
+        }
+      `}</style>
     </div>
   );
 });

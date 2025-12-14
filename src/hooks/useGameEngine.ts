@@ -10,7 +10,7 @@ const generateId = () => Math.random().toString(36).substring(2, 9);
 const getRandomGemType = (numTypes: number): GemType => {
   const safeNumTypes = Math.max(1, Math.min(numTypes || 4, GEM_TYPES.length));
   const types = GEM_TYPES.slice(0, safeNumTypes);
-  return types[Math.floor(Math.random() * types.length)] || 'leaf'; // Fallback a tipo válido
+  return types[Math.floor(Math.random() * types.length)] || 'red';
 };
 
 const createGem = (row: number, col: number, numTypes: number, specialChance: number): Gem => {
@@ -268,32 +268,30 @@ export const useGameEngine = () => {
         return { ...prev, selectedGem: pos };
       }
       
-      // If clicking the same gem, deselect
-      if (prev.selectedGem.row === pos.row && prev.selectedGem.col === pos.col) {
-        return { ...prev, selectedGem: null };
+      const { row: r1, col: c1 } = prev.selectedGem;
+      const { row: r2, col: c2 } = pos;
+      
+      // Check if adjacent
+      const isAdjacent = (Math.abs(r1 - r2) === 1 && c1 === c2) || (Math.abs(c1 - c2) === 1 && r1 === r2);
+      
+      if (isAdjacent) {
+        // Will trigger swap in next render
+        return prev;
       }
       
-      // Select new gem (swap is handled by GameBoard's onGemSwap)
       return { ...prev, selectedGem: pos };
     });
   }, []);
 
   const processMatches = useCallback(() => {
     setGameState(prev => {
-      // Evitar procesar si el tablero está vacío o no estamos jugando
-      if (!prev.isPlaying || prev.board.length === 0) {
-        return prev;
-      }
-      
       const matches = findMatches(prev.board);
       
       if (matches.length === 0) {
-        // Check win/lose condition - PRIMERO verificamos puntuación
+        // Check win/lose condition
         if (prev.score >= prev.targetScore) {
           const newUnlockedLevels = Math.max(prev.unlockedLevels, prev.level + 1);
           const newGems = prev.gems + Math.floor(prev.score / 100);
-          
-          console.log('Level WON! Score:', prev.score, 'Target:', prev.targetScore);
           
           return {
             ...prev,
@@ -301,25 +299,21 @@ export const useGameEngine = () => {
             unlockedLevels: newUnlockedLevels,
             totalScore: prev.totalScore + prev.score,
             gems: newGems,
-            combo: 0,
-          };
+            // Mark for saving
+            _shouldSave: { won: true, unlockedLevels: newUnlockedLevels, gems: newGems },
+          } as GameState & { _shouldSave?: unknown };
         }
-        
-        // LUEGO verificamos si nos quedamos sin movimientos
         if (prev.moves <= 0) {
-          const newLives = Math.max(0, prev.lives - 1);
-          
-          console.log('Level LOST! Score:', prev.score, 'Target:', prev.targetScore, 'Moves:', prev.moves);
+          const newLives = prev.lives - 1;
           
           return {
             ...prev,
             isPlaying: false,
             lives: newLives,
-            combo: 0,
-          };
+            // Mark for saving
+            _shouldSave: { lost: true, lives: newLives },
+          } as GameState & { _shouldSave?: unknown };
         }
-        
-        // Sin matches pero aún jugando - solo resetear combo
         return { ...prev, combo: 0 };
       }
       
@@ -366,6 +360,7 @@ export const useGameEngine = () => {
       
       const newBoard = prev.board.map(row => [...row]);
       const size = newBoard.length;
+      const config = LEVELS[prev.level - 1] || LEVELS[0];
       let destroyed = 0;
       
       // Destroy 3x3 area
@@ -394,6 +389,7 @@ export const useGameEngine = () => {
       if (prev.boosters.hammer <= 0) return prev;
       
       const newBoard = prev.board.map(row => [...row]);
+      const config = LEVELS[prev.level - 1] || LEVELS[0];
       
       if (newBoard[pos.row][pos.col]) {
         newBoard[pos.row][pos.col] = null;
@@ -426,22 +422,28 @@ export const useGameEngine = () => {
     });
   }, [initializeBoard]);
 
-  // Process matches after board changes - con protección anti-loop
-  const processingRef = useRef(false);
+  // Process matches after board changes
   useEffect(() => {
-    if (gameState.isPlaying && gameState.board.length > 0 && !processingRef.current) {
-      processingRef.current = true;
-      const timer = setTimeout(() => {
-        processMatches();
-        processingRef.current = false;
-      }, 300);
-      return () => {
-        clearTimeout(timer);
-        processingRef.current = false;
-      };
+    if (gameState.isPlaying) {
+      const timer = setTimeout(processMatches, 300);
+      return () => clearTimeout(timer);
     }
   }, [gameState.board, gameState.isPlaying, processMatches]);
 
+  // Handle gem selection and swapping
+  useEffect(() => {
+    if (gameState.selectedGem) {
+      const handleSwap = (pos: Position) => {
+        const { row: r1, col: c1 } = gameState.selectedGem!;
+        const { row: r2, col: c2 } = pos;
+        const isAdjacent = (Math.abs(r1 - r2) === 1 && c1 === c2) || (Math.abs(c1 - c2) === 1 && r1 === r2);
+        
+        if (isAdjacent) {
+          swapGems(gameState.selectedGem!, pos);
+        }
+      };
+    }
+  }, [gameState.selectedGem, swapGems]);
 
   return {
     gameState,

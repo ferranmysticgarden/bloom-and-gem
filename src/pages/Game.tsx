@@ -24,63 +24,34 @@ const Game = () => {
   const [showDailyReward, setShowDailyReward] = useState(false);
   const [userEmail, setUserEmail] = useState<string>('');
 
-  const [authChecked, setAuthChecked] = useState(false);
-
   // Check auth and show daily reward
   useEffect(() => {
-    let mounted = true;
-    let hasCheckedReward = false;
-    
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (!mounted) return;
-        
+    const checkAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Auth error:', error);
+          navigate('/auth');
+          return;
+        }
         if (!session) {
           navigate('/auth');
-        } else {
-          setUserEmail(session.user.email || '');
-          setAuthChecked(true);
+          return;
         }
-      }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return;
-      
-      if (!session) {
-        navigate('/auth');
-      } else {
         setUserEmail(session.user.email || '');
-        setAuthChecked(true);
         
-        // Solo mostrar recompensa si ya estaba logueado (no login inicial)
-        // Verificar si hay datos de progreso previos en localStorage
-        const hasPlayedBefore = localStorage.getItem('lastDailyReward') !== null || 
-                                localStorage.getItem('gameStarted') !== null;
-        
-        if (hasPlayedBefore && !hasCheckedReward) {
-          hasCheckedReward = true;
-          setTimeout(() => {
-            if (!mounted) return;
-            const lastReward = localStorage.getItem('lastDailyReward');
-            const today = new Date().toDateString();
-            if (lastReward !== today) {
-              setShowDailyReward(true);
-            }
-          }, 1000);
+        // Check daily reward
+        const lastReward = localStorage.getItem('lastDailyReward');
+        const today = new Date().toDateString();
+        if (lastReward !== today) {
+          setShowDailyReward(true);
         }
-        
-        // Marcar que el usuario ha iniciado el juego al menos una vez
-        localStorage.setItem('gameStarted', 'true');
+      } catch (err) {
+        console.error('Auth check failed:', err);
+        navigate('/auth');
       }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
     };
+    checkAuth();
   }, [navigate]);
 
   const handlePlay = useCallback(() => {
@@ -154,20 +125,12 @@ const Game = () => {
     console.log('Purchasing:', itemId);
   }, []);
 
-  // Determine if level is won or lost - con más logging para debug
-  const hasBoard = gameState.board && gameState.board.length > 0;
-  const isLevelWon = !gameState.isPlaying && hasBoard && gameState.score >= gameState.targetScore;
-  const isLevelLost = !gameState.isPlaying && hasBoard && gameState.score < gameState.targetScore && gameState.moves <= 0;
-  
-  // Debug: log state changes
-  useEffect(() => {
-    if (hasBoard && !gameState.isPlaying) {
-      console.log('Game ended - Won:', isLevelWon, 'Lost:', isLevelLost, 'Score:', gameState.score, 'Target:', gameState.targetScore);
-    }
-  }, [gameState.isPlaying, hasBoard, isLevelWon, isLevelLost, gameState.score, gameState.targetScore]);
+  // Determine if level is won or lost
+  const isLevelWon = !gameState.isPlaying && gameState.score >= gameState.targetScore && gameState.board.length > 0;
+  const isLevelLost = !gameState.isPlaying && gameState.score < gameState.targetScore && gameState.moves <= 0 && gameState.board.length > 0;
 
-  // Loading screen - show while checking auth or loading game
-  if (loading || !authChecked) {
+  // Loading screen
+  if (loading) {
     return (
       <div 
         style={{
@@ -176,62 +139,15 @@ const Game = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          width: '100%',
-          height: '100%',
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(180deg, #1a0a2e 0%, #16213e 50%, #0f0c29 100%)',
-          overflow: 'hidden',
+          backgroundImage: `url(${mysticForestBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       >
-        {/* Logo/Title */}
-        <div 
-          style={{ 
-            fontFamily: "'Cinzel', serif", 
-            fontSize: '32px', 
-            fontWeight: 'bold',
-            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            marginBottom: '24px',
-            textShadow: '0 0 30px rgba(255,215,0,0.3)',
-          }}
-        >
-          Mystic Garden
-        </div>
-        
-        {/* Loading spinner */}
-        <div 
-          style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(255,255,255,0.1)',
-            borderTop: '4px solid #FFD700',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-          }}
-        />
-        
-        <div 
-          style={{ 
-            color: 'rgba(255,255,255,0.7)', 
-            fontSize: '16px', 
-            fontFamily: "'Quicksand', sans-serif",
-            marginTop: '20px',
-          }}
-        >
-          Cargando...
-        </div>
-        
-        {/* CSS for spinner animation */}
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
+        <div style={{ color: 'white', fontSize: '20px', fontFamily: "'Cinzel', serif" }}>Cargando...</div>
       </div>
     );
   }
@@ -242,9 +158,11 @@ const Game = () => {
       <>
         <MainMenu
           lives={gameState.lives}
+          maxLives={gameState.maxLives}
           gems={gameState.gems}
           unlockedLevels={gameState.unlockedLevels}
           totalScore={gameState.totalScore}
+          streak={gameState.streak}
           userEmail={userEmail}
           onPlay={handlePlay}
           onLevelSelect={() => setScreen('level-select')}
@@ -252,9 +170,9 @@ const Game = () => {
           onLogout={handleLogout}
           onExit={handleLogout}
         />
-      {showDailyReward && (
+        {showDailyReward && (
           <DailyReward
-            streak={((gameState.streak || 0) % 7) + 1}
+            streak={gameState.streak + 1}
             onClaim={handleClaimDailyReward}
             onClose={() => setShowDailyReward(false)}
           />
@@ -328,7 +246,7 @@ const Game = () => {
           display: 'flex',
           flexDirection: 'column',
           flex: 1,
-          padding: '12px',
+          padding: '160px 12px 12px 12px',
           gap: '8px',
           maxWidth: '420px',
           margin: '0 auto',
@@ -384,7 +302,65 @@ const Game = () => {
         />
       )}
 
-      {/* Pause modal removed - was dead code (screen never set to 'paused') */}
+      {/* Pause modal */}
+      {screen === 'paused' && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.7)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
+        >
+          <div 
+            style={{
+              padding: '32px',
+              textAlign: 'center',
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, rgba(60, 20, 80, 0.95) 0%, rgba(40, 15, 60, 0.95) 100%)',
+              border: '2px solid rgba(255, 215, 0, 0.3)',
+            }}
+          >
+            <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '24px', marginBottom: '24px', color: 'white' }}>Pausado</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button
+                onClick={() => setScreen('playing')}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '9999px',
+                  fontWeight: '600',
+                  background: 'linear-gradient(135deg, #FFA500 0%, #FF8C00 100%)',
+                  color: '#1a1a2e',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                Continuar
+              </button>
+              <button
+                onClick={handleMainMenu}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  background: 'transparent',
+                  color: 'white',
+                  cursor: 'pointer',
+                }}
+              >
+                Menú Principal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

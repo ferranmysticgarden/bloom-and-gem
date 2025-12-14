@@ -1,4 +1,4 @@
-export type GemType = 'leaf' | 'cherry' | 'tulip' | 'sunflower' | 'hibiscus' | 'daisy';
+export type GemType = 'red' | 'blue' | 'green' | 'yellow' | 'purple' | 'pink' | 'cyan';
 
 export type SpecialGemType = 'bomb' | 'lightning' | 'rainbow' | null;
 

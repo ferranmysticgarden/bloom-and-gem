@@ -25,8 +25,6 @@ export type Database = {
           last_life_refill: number
           leaves: number
           lives: number
-          rainbows: number | null
-          shuffles: number | null
           unlimited_lives_until: number | null
           unlocked_levels: number
           updated_at: string
@@ -42,8 +40,6 @@ export type Database = {
           last_life_refill?: number
           leaves?: number
           lives?: number
-          rainbows?: number | null
-          shuffles?: number | null
           unlimited_lives_until?: number | null
           unlocked_levels?: number
           updated_at?: string
@@ -59,8 +55,6 @@ export type Database = {
           last_life_refill?: number
           leaves?: number
           lives?: number
-          rainbows?: number | null
-          shuffles?: number | null
           unlimited_lives_until?: number | null
           unlocked_levels?: number
           updated_at?: string

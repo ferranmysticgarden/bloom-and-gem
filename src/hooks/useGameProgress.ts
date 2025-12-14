@@ -9,8 +9,6 @@ export interface GameProgress {
   unlockedLevels: number;
   hammers: number;
   bombs: number;
-  shuffles: number;
-  rainbows: number;
   lastLifeRefill: number;
   unlimitedLivesUntil: number | null;
 }
@@ -23,8 +21,6 @@ const DEFAULT_PROGRESS: GameProgress = {
   unlockedLevels: 1,
   hammers: 3,
   bombs: 1,
-  shuffles: 3,
-  rainbows: 1,
   lastLifeRefill: Date.now(),
   unlimitedLivesUntil: null,
 };
@@ -59,8 +55,6 @@ export const useGameProgress = () => {
           unlockedLevels: data.unlocked_levels ?? DEFAULT_PROGRESS.unlockedLevels,
           hammers: data.hammers ?? DEFAULT_PROGRESS.hammers,
           bombs: data.bombs ?? DEFAULT_PROGRESS.bombs,
-          shuffles: (data as any).shuffles ?? DEFAULT_PROGRESS.shuffles,
-          rainbows: (data as any).rainbows ?? DEFAULT_PROGRESS.rainbows,
           lastLifeRefill: data.last_life_refill ?? DEFAULT_PROGRESS.lastLifeRefill,
           unlimitedLivesUntil: data.unlimited_lives_until ?? DEFAULT_PROGRESS.unlimitedLivesUntil,
         });
@@ -90,11 +84,9 @@ export const useGameProgress = () => {
         unlocked_levels: DEFAULT_PROGRESS.unlockedLevels,
         hammers: DEFAULT_PROGRESS.hammers,
         bombs: DEFAULT_PROGRESS.bombs,
-        shuffles: DEFAULT_PROGRESS.shuffles,
-        rainbows: DEFAULT_PROGRESS.rainbows,
         last_life_refill: DEFAULT_PROGRESS.lastLifeRefill,
         unlimited_lives_until: DEFAULT_PROGRESS.unlimitedLivesUntil,
-      } as any);
+      });
 
     if (error) {
       console.error('Error creating progress:', error);
@@ -119,8 +111,6 @@ export const useGameProgress = () => {
     if (newProgress.unlockedLevels !== undefined) updateData.unlocked_levels = newProgress.unlockedLevels;
     if (newProgress.hammers !== undefined) updateData.hammers = newProgress.hammers;
     if (newProgress.bombs !== undefined) updateData.bombs = newProgress.bombs;
-    if (newProgress.shuffles !== undefined) updateData.shuffles = newProgress.shuffles;
-    if (newProgress.rainbows !== undefined) updateData.rainbows = newProgress.rainbows;
     if (newProgress.lastLifeRefill !== undefined) updateData.last_life_refill = newProgress.lastLifeRefill;
     if (newProgress.unlimitedLivesUntil !== undefined) updateData.unlimited_lives_until = newProgress.unlimitedLivesUntil;
 

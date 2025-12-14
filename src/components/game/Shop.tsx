@@ -27,12 +27,7 @@ const shopItems = [
 
 export const Shop = memo(({ lives, gems, totalScore, onClose, onPurchase }: ShopProps) => {
   return (
-    <div 
-      className="fixed inset-0 flex items-center justify-center z-50 p-4"
-      style={{
-        background: 'rgba(0, 0, 0, 0.7)',
-      }}
-    >
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       {/* Stats Bar - Top */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-4 z-50">
         <div className="flex items-center gap-2 bg-red-900/80 px-4 py-2 rounded-full border border-red-500/50">

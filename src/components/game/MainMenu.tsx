@@ -1,14 +1,14 @@
-import { memo, useMemo, useState } from 'react';
-import { Play, Grid3X3, ShoppingBag, LogOut, Power, Download } from 'lucide-react';
+import { memo } from 'react';
+import { Play, Grid3X3, ShoppingBag, LogOut, Power } from 'lucide-react';
 import mysticForestBg from '@/assets/mystic-forest-bg.jpg';
-import { usePWAInstall } from '@/hooks/usePWAInstall';
-import { InstallPrompt } from './InstallPrompt';
 
 interface MainMenuProps {
   lives: number;
+  maxLives: number;
   gems: number;
   unlockedLevels: number;
   totalScore: number;
+  streak: number;
   userEmail?: string;
   onPlay: () => void;
   onLevelSelect: () => void;
@@ -29,48 +29,22 @@ export const MainMenu = memo(({
   onLogout,
   onExit,
 }: MainMenuProps) => {
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
-  const { isInstallable, isInstalled, isIOS, isAndroid, install, isStandalone } = usePWAInstall();
-
-  // Pre-generate particle positions to avoid re-renders
-  const particles = useMemo(() => 
-    Array.from({ length: 25 }).map((_, i) => ({
-      id: i,
-      width: 3 + Math.random() * 5,
-      height: 3 + Math.random() * 5,
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      delay: Math.random() * 8,
-      duration: 6 + Math.random() * 6,
-    }))
-  , []);
-  
-  // Mostrar botón de instalar si no está instalado y es instalable (o es iOS)
-  const showInstallButton = !isInstalled && !isStandalone && (isInstallable || isIOS);
-  
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
         
         .main-menu {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          width: 100%;
-          height: 100%;
+          min-height: 100vh;
           display: flex;
           flex-direction: column;
           align-items: center;
           padding: 16px;
-          overflow-x: hidden;
-          overflow-y: auto;
+          position: relative;
+          overflow: hidden;
           background-image: url(${mysticForestBg});
           background-size: cover;
           background-position: center;
-          box-sizing: border-box;
         }
         
         .menu-overlay {
@@ -85,7 +59,12 @@ export const MainMenu = memo(({
           pointer-events: none;
           background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,215,0,0.6));
           box-shadow: 0 0 10px rgba(255,215,0,0.5);
-          opacity: 0.5;
+          animation: float-particle 8s ease-in-out infinite;
+        }
+        
+        @keyframes float-particle {
+          0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+          50% { transform: translateY(-30px) translateX(10px); opacity: 1; }
         }
         
         /* Stats Bar */
@@ -154,7 +133,15 @@ export const MainMenu = memo(({
         }
         
         .title-emojis span {
-          display: inline-block;
+          animation: bounce 1s ease-in-out infinite;
+        }
+        
+        .title-emojis span:nth-child(2) { animation-delay: 0.2s; }
+        .title-emojis span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
         }
         
         .title-subtitle {
@@ -278,31 +265,6 @@ export const MainMenu = memo(({
           color: rgba(255,255,255,0.9);
         }
         
-        .install-btn {
-          width: 100%;
-          padding: 14px;
-          margin-top: 16px;
-          border-radius: 50px;
-          border: 2px solid #4ade80;
-          background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.3) 100%);
-          color: #4ade80;
-          font-family: inherit;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          transition: all 0.2s;
-        }
-        
-        .install-btn:hover {
-          background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(22, 163, 74, 0.4) 100%);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 20px rgba(74, 222, 128, 0.3);
-        }
-        
         /* Levels Preview Card */
         .levels-preview {
           position: relative;
@@ -358,16 +320,18 @@ export const MainMenu = memo(({
         {/* Overlay */}
         <div className="menu-overlay" />
         
-        {/* Static particles - no animation to prevent trembling */}
-        {particles.slice(0, 10).map((p) => (
+        {/* Floating particles */}
+        {Array.from({ length: 25 }).map((_, i) => (
           <div
-            key={p.id}
+            key={i}
             className="menu-particle"
             style={{
-              width: p.width,
-              height: p.height,
-              left: `${p.left}%`,
-              top: `${p.top}%`,
+              width: 3 + Math.random() * 5,
+              height: 3 + Math.random() * 5,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 8}s`,
+              animationDuration: `${6 + Math.random() * 6}s`,
             }}
           />
         ))}
@@ -423,17 +387,6 @@ export const MainMenu = memo(({
             </button>
           </div>
           
-          {/* Botón Instalar - solo si no está instalado */}
-          {showInstallButton && (
-            <button 
-              onClick={() => setShowInstallPrompt(true)} 
-              className="install-btn"
-            >
-              <Download size={20} />
-              Instalar App
-            </button>
-          )}
-          
           <div className="bottom-buttons">
             <button onClick={onLogout} className="bottom-btn">
               <LogOut size={16} />
@@ -455,16 +408,6 @@ export const MainMenu = memo(({
           </div>
         </div>
       </div>
-      
-      {/* Install Prompt Modal */}
-      {showInstallPrompt && (
-        <InstallPrompt
-          isIOS={isIOS}
-          isAndroid={isAndroid}
-          onInstall={install}
-          onClose={() => setShowInstallPrompt(false)}
-        />
-      )}
     </>
   );
 });

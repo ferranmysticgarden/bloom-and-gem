@@ -37,34 +37,26 @@ class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div
+          className="min-h-screen flex items-center justify-center p-4"
           style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '16px',
-            background: 'linear-gradient(180deg, #1a0a2e 0%, #16213e 50%, #0f0c29 100%)',
+            backgroundImage: `url(${mysticForestBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
           }}
         >
+          <div className="absolute inset-0 bg-black/50" />
           <div
+            className="relative z-10 text-center p-8 rounded-2xl max-w-md w-full"
             style={{
-              position: 'relative',
-              zIndex: 10,
-              textAlign: 'center',
-              padding: '32px',
-              borderRadius: '16px',
-              maxWidth: '400px',
-              width: '100%',
               background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
               border: '2px solid rgba(255, 215, 0, 0.3)',
             }}
           >
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🌿</div>
+            <div className="text-6xl mb-4">🌿</div>
             <h1
+              className="text-2xl font-bold mb-3"
               style={{
-                fontSize: '24px',
-                fontWeight: 'bold',
-                marginBottom: '12px',
                 background: 'linear-gradient(45deg, #FFD700, #FFA500)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -72,37 +64,23 @@ class ErrorBoundary extends Component<Props, State> {
             >
               ¡Oops! Algo salió mal
             </h1>
-            <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '24px', fontSize: '14px' }}>
+            <p className="text-white/80 mb-6 text-sm">
               Ha ocurrido un error inesperado. Por favor, intenta recargar la aplicación.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="flex flex-col gap-3">
               <button
                 onClick={this.handleReload}
+                className="w-full py-3 px-6 rounded-full font-semibold transition-transform hover:scale-105"
                 style={{
-                  width: '100%',
-                  padding: '14px 24px',
-                  borderRadius: '50px',
-                  fontWeight: '600',
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
                 }}
               >
                 🔄 Recargar App
               </button>
               <button
                 onClick={this.handleClearAndReload}
-                style={{
-                  width: '100%',
-                  padding: '14px 24px',
-                  borderRadius: '50px',
-                  fontWeight: '600',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  background: 'transparent',
-                  color: 'white',
-                  cursor: 'pointer',
-                }}
+                className="w-full py-3 px-6 rounded-full font-semibold border border-white/30 text-white hover:bg-white/10 transition-colors"
               >
                 🔐 Volver a Iniciar Sesión
               </button>
