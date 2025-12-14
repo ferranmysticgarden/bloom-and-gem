@@ -162,12 +162,13 @@ const Game = () => {
   }, []);
 
   const hasBoard = gameState.board && gameState.board.length > 0;
-  const isLevelWon = !gameState.isPlaying && hasBoard && gameState.score >= gameState.targetScore;
-  const isLevelLost = !gameState.isPlaying && hasBoard && gameState.score < gameState.targetScore && gameState.moves <= 0;
+  // Consideramos nivel ganado/perdido SOLO por puntuación y movimientos, así evitamos bloqueos raros
+  const isLevelWon = hasBoard && gameState.score >= gameState.targetScore;
+  const isLevelLost = hasBoard && gameState.score < gameState.targetScore && gameState.moves <= 0;
 
   // Debug: log state changes
   useEffect(() => {
-    if (hasBoard && !gameState.isPlaying) {
+    if (hasBoard && (isLevelWon || isLevelLost)) {
       console.log(
         "Game ended - Won:",
         isLevelWon,
@@ -177,9 +178,11 @@ const Game = () => {
         gameState.score,
         "Target:",
         gameState.targetScore,
+        "Moves:",
+        gameState.moves,
       );
     }
-  }, [gameState.isPlaying, hasBoard, isLevelWon, isLevelLost, gameState.score, gameState.targetScore]);
+  }, [hasBoard, isLevelWon, isLevelLost, gameState.score, gameState.targetScore, gameState.moves]);
 
   // Loading screen
   if (loading || !authChecked) {
