@@ -1,6 +1,6 @@
-import { memo, useCallback, useState, useEffect } from "react";
-import { Gem, Position } from "@/types/game";
-import { GemComponent } from "./GemComponent";
+import { memo, useCallback, useState, useEffect } from 'react';
+import { Gem, Position } from '@/types/game';
+import { GemComponent } from './GemComponent';
 
 interface GameBoardProps {
   board: (Gem | null)[][];
@@ -12,46 +12,35 @@ interface GameBoardProps {
 export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: GameBoardProps) => {
   const rows = board?.length || 0;
   const cols = board?.[0]?.length || 0;
-
+  
   // Return early if no board
   if (rows === 0 || cols === 0) {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "32px" }}>
-        <div style={{ color: "rgba(255,255,255,0.6)" }}>Cargando tablero...</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px' }}>
+        <div style={{ color: 'rgba(255,255,255,0.6)' }}>Cargando tablero...</div>
       </div>
     );
   }
 
-  const handleGemClick = useCallback(
-    (row: number, col: number) => {
-      // ✅ CORRECCIÓN: Desbloquear siempre el movimiento
-      if (typeof window !== "undefined") {
-        const w = window as any;
-        if (!w.gameState) w.gameState = {};
-        w.gameState.canMove = true;
-        w.gameState.isLocked = false;
+  const handleGemClick = useCallback((row: number, col: number) => {
+    const pos = { row, col };
+    
+    if (selectedGem) {
+      const { row: r1, col: c1 } = selectedGem;
+      const isAdjacent = (Math.abs(r1 - row) === 1 && c1 === col) || (Math.abs(c1 - col) === 1 && r1 === row);
+      
+      if (isAdjacent) {
+        onGemSwap(selectedGem, pos);
+        return;
       }
-
-      const pos = { row, col };
-
-      if (selectedGem) {
-        const { row: r1, col: c1 } = selectedGem;
-        const isAdjacent = (Math.abs(r1 - row) === 1 && c1 === col) || (Math.abs(c1 - col) === 1 && r1 === row);
-
-        if (isAdjacent) {
-          onGemSwap(selectedGem, pos);
-          return;
-        }
-      }
-
-      onGemClick(pos);
-    },
-    [selectedGem, onGemClick, onGemSwap],
-  );
+    }
+    
+    onGemClick(pos);
+  }, [selectedGem, onGemClick, onGemSwap]);
 
   // Calculate cell size based on screen width
   const getCellSize = () => {
-    if (typeof window === "undefined") return 42;
+    if (typeof window === 'undefined') return 42;
     const screenWidth = window.innerWidth;
     const maxBoardWidth = Math.min(screenWidth - 32, 420);
     const gap = 4;
@@ -63,28 +52,28 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
 
   useEffect(() => {
     const handleResize = () => setCellSize(getCellSize());
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     handleResize();
-    return () => window.removeEventListener("resize", handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [cols]);
 
   const gap = 4;
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1 }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
       {/* Board container - AZULADO como en la referencia */}
-      <div
+      <div 
         style={{
-          background: "linear-gradient(180deg, hsl(250, 30%, 28%) 0%, hsl(260, 28%, 22%) 100%)",
-          boxShadow: "0 8px 32px hsla(260, 40%, 10%, 0.8)",
-          borderRadius: "20px",
-          padding: "12px",
+          background: 'linear-gradient(180deg, hsl(250, 30%, 28%) 0%, hsl(260, 28%, 22%) 100%)',
+          boxShadow: '0 8px 32px hsla(260, 40%, 10%, 0.8)',
+          borderRadius: '20px',
+          padding: '12px',
         }}
       >
         {/* Grid 8x9 */}
-        <div
+        <div 
           style={{
-            display: "grid",
+            display: 'grid',
             gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
             gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
             gap: `${gap}px`,
@@ -92,18 +81,18 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
         >
           {board.map((row, rowIndex) =>
             row.map((gem, colIndex) => (
-              <div
+              <div 
                 key={`${rowIndex}-${colIndex}`}
                 style={{
                   width: `${cellSize}px`,
                   height: `${cellSize}px`,
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                  background: "hsl(230, 35%, 22%)",
-                  boxShadow: "inset 0 2px 6px hsla(230, 40%, 8%, 0.9)",
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                  background: 'hsl(230, 35%, 22%)',
+                  boxShadow: 'inset 0 2px 6px hsla(230, 40%, 8%, 0.9)',
                 }}
               >
                 {gem && (
@@ -115,7 +104,7 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
                   />
                 )}
               </div>
-            )),
+            ))
           )}
         </div>
       </div>
@@ -123,4 +112,4 @@ export const GameBoard = memo(({ board, selectedGem, onGemClick, onGemSwap }: Ga
   );
 });
 
-GameBoard.displayName = "GameBoard";
+GameBoard.displayName = 'GameBoard';
